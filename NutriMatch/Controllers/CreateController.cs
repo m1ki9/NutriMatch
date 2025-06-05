@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MyApp.Namespace
 {
-    public class Home : Controller
+    public class Create : Controller
     {
-        // GET: Home
+        // GET: Create
         public ActionResult Index()
         {
             return View();
