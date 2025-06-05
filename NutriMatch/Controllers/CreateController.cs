@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 namespace MyApp.Namespace
 {
-    public class Home : Controller
+    public class Create : Controller
     {
         public ActionResult Index()
         {
