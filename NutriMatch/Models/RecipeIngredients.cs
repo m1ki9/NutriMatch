@@ -8,15 +8,16 @@ using System.Threading.Tasks;
 
 namespace NutriMatch.Models
 {
-    public class Ingredient
+    public class RecipeIngredients
     {
         [Key]
         public int Id { get; set; }
-        public String Name { get; set; }
-        public float Calories { get; set; }
-        public float Protein { get; set; }
-        public float Carbs { get; set; }
-        public float Fat { get; set; }
 
+        public String Unit { get; set; }
+
+        public float Quantity { get; set; }
+
+        [NotMapped]
+        public NutritionInfo NutritionInfo { get; set; } 
     }
 }

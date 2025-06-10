@@ -127,5 +127,14 @@ namespace NutriMatch.Controllers
         {
             return _context.Recipes.Any(e => e.Id == id);
         }
+        public async Task<ActionResult<List<Ingredient>>> getSuggestions([FromQuery] String query)
+        {
+            List<Ingredient> suggestions = await _context.Ingredients
+            .Where(i => EF.Functions.ILike(i.Name, $"%{query}%"))
+            .OrderBy(i => i.Name)
+            .Take(5)
+            .ToListAsync();   
+            return suggestions;
+        }
     }
 }
