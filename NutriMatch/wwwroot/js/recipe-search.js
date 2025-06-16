@@ -204,7 +204,7 @@ function addIngredient(ingredient, quantity, unit) {
     }
 
     // Check if ingredient already exists
-    const existingIngredient = selectedIngredients.find(item => item.id === ingredient.id);
+    const existingIngredient = selectedIngredients.find(item => item.Id === ingredient.id);
     
     if (existingIngredient) {
         alert('This ingredient is already added to the recipe.');
@@ -213,10 +213,10 @@ function addIngredient(ingredient, quantity, unit) {
 
     // Add new ingredient
     const newIngredient = {
-        id: ingredient.id,
-        name: ingredient.name,
-        quantity: quantity,
-        unit: unit
+        Id: ingredient.id,
+        Name: ingredient.name,
+        Quantity: quantity,
+        Unit: unit
     };
 
     selectedIngredients.push(newIngredient);
@@ -235,7 +235,7 @@ function addIngredient(ingredient, quantity, unit) {
 
 // Remove ingredient from selection
 function removeIngredient(ingredientName) {
-    selectedIngredients = selectedIngredients.filter(item => item.name !== ingredientName);
+    selectedIngredients = selectedIngredients.filter(item => item.Name !== ingredientName);
     updateIngredientsDisplay();
     updateIngredientsInput();
 }
@@ -249,8 +249,8 @@ function updateIngredientsDisplay() {
     } else {
         ingredientsList.innerHTML = selectedIngredients.map(ingredient => 
             `<span class="ingredient-tag" style="display: inline-block; background-color: #e3f2fd; padding: 5px 10px; margin: 2px; border-radius: 15px; font-size: 14px;">
-                ${escapeHtml(ingredient.quantity)} ${escapeHtml(ingredient.unit)} of ${escapeHtml(ingredient.name)}
-                <span class="remove" onclick="removeIngredient('${escapeHtml(ingredient.name)}')" 
+                ${escapeHtml(ingredient.Quantity)} ${escapeHtml(ingredient.Unit)} of ${escapeHtml(ingredient.Name)}
+                <span class="remove" onclick="removeIngredient('${escapeHtml(ingredient.Name)}')" 
                       style="cursor: pointer; margin-left: 8px; color: #dc3545; font-weight: bold;" 
                       title="Remove ingredient">&times;</span>
             </span>`
@@ -262,6 +262,7 @@ function updateIngredientsDisplay() {
 function updateIngredientsInput() {
     if (hiddenInput) {
         hiddenInput.value = JSON.stringify(selectedIngredients);
+        console.log('Updated hidden input:', hiddenInput.value);
     }
 }
 
@@ -293,14 +294,3 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Public API for external use
-window.RecipeSearch = {
-    addIngredient: addIngredient,
-    removeIngredient: removeIngredient,
-    getSelectedIngredients: () => [...selectedIngredients],
-    clearIngredients: () => {
-        selectedIngredients = [];
-        updateIngredientsDisplay();
-        updateIngredientsInput();
-    }
-};

@@ -8,10 +8,15 @@ using System.Threading.Tasks;
 
 namespace NutriMatch.Models
 {
-    public class RecipeIngredients
+    public class RecipeIngredient
     {
         [Key]
         public int Id { get; set; }
+
+        public int RecipeId { get; set; }
+        public int IngredientId { get; set; }
+
+        public virtual Ingredient Ingredient {get;set;}
 
         public String Unit { get; set; }
 
