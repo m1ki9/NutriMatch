@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NutriMatch.Data;
 using NutriMatch.Models;
+using System.Text.Json;
 namespace NutriMatch.Controllers
 {
     public class RecipesController : Controller
@@ -26,7 +27,7 @@ namespace NutriMatch.Controllers
             {
                 return NotFound();
             }
-            var recipe = await _context.Recipes
+            var recipe = await _context.Recipes.Include(r => r.RecipeIngredients).ThenInclude(ri => ri.Ingredient)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (recipe == null)
             {
@@ -40,16 +41,36 @@ namespace NutriMatch.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Instructions,Rating")] Recipe recipe)
+        public async Task<IActionResult> Create([Bind("Id,Title,Instructions")] Recipe recipe)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(recipe);
                 await _context.SaveChangesAsync();
+                string selectedIngredients = Request.Form["Ingredients"];
+                List<SelectedIngredient> ingredients = JsonSerializer.Deserialize<List<SelectedIngredient>>(selectedIngredients);
+                foreach(var i in ingredients)
+                { 
+                    _context.RecipeIngredients.Add(new RecipeIngredient {
+                        RecipeId = recipe.Id,
+                        IngredientId = i.Id,
+                        Unit = i.Unit,
+                        Quantity = i.Quantity 
+                    });
+                }
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             else
             {
+                foreach (var key in ModelState.Keys)
+{
+    var errors = ModelState[key].Errors;
+    foreach (var error in errors)
+    {
+        Console.WriteLine($"Key: {key} - Error: {error.ErrorMessage}");
+    }
+}
                 Console.WriteLine("Model state is invalid. Please check the input data.");
             }
             return View(recipe);
@@ -69,7 +90,7 @@ namespace NutriMatch.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Instructions,Rating")] Recipe recipe)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Instructions")] Recipe recipe)
         {
             if (id != recipe.Id)
             {

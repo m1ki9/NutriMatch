@@ -35,6 +35,17 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Rating)
         </dd>
+        <dt>
+            <ul>
+            @foreach (var ingredient in Model.RecipeIngredients){
+                <li>
+                    @Html.DisplayFor(modelItem => ingredient.Ingredient.Name) 
+                    @Html.DisplayFor(modelItem => ingredient.Quantity) 
+                    @Html.DisplayFor(modelItem => ingredient.Unit)
+                </li>
+            }
+            </ul>
+        </dt>
     </dl>
 </div>
 <div>

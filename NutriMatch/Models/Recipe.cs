@@ -13,9 +13,10 @@ namespace NutriMatch.Models
         public int Id { get; set; }
         public String Title { get; set; }
         public String Instructions { get; set; }
+        [ValidateNever]
         public float Rating { get; set; }
         [ValidateNever]
-        public virtual List<RecipeIngredients> RecipeIngredients { get; set; }   
+        public virtual List<RecipeIngredient> RecipeIngredients { get; set; }   
         
     }
 }
