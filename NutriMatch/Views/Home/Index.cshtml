@@ -1,7 +1,50 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Home Page";
 }
+<html>
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        <form id="filterForm">
+         <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Calories (Min)</label>
+                <input name="MinCalories" class="form-control" type="number" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Calories (Max)</label>
+                <input name="MaxCalories" class="form-control" type="number" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Protein (Min)</label>
+                <input name="MinProtein" class="form-control" type="number" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Protein (Max)</label>
+                <input name="MaxProtein" class="form-control" type="number" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Fats (Min)</label>
+                <input name="MinFats" class="form-control" type="number" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Fats (Max)</label>
+                <input name="MaxFats" class="form-control" type="number" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Carbs (Min)</label>
+                <input name="MinCarbs" class="form-control" type="number" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Carbs (Max)</label>
+                <input name="MaxCarbs" class="form-control" type="number" />
+            </div>
+            <div class="col-12 text-end">
+                <button type="button" class="btn btn-primary" id="submitFilter">Search Recipes</button>
+            </div>
+        </form>
+    </div>
 </div>
+<div id="resultsContainer" class="mt-4"></div>
+</div>
+<script src="~/js/filter.js"></script>
+</html>

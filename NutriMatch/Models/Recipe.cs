@@ -17,6 +17,14 @@ namespace NutriMatch.Models
         public float Rating { get; set; }
         [ValidateNever]
         public virtual List<RecipeIngredient> RecipeIngredients { get; set; }   
+        [ValidateNever]
+        public float Calories { get; set; }
+        [ValidateNever]
+        public float Protein { get; set; }
+        [ValidateNever]
+        public float Carbs { get; set; }
+        [ValidateNever]
+        public float Fat { get; set; }
         
     }
 }
