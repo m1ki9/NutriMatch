@@ -25,6 +25,8 @@ namespace NutriMatch.Models
         public float Carbs { get; set; }
         [ValidateNever]
         public float Fat { get; set; }
+        [ValidateNever]
+        public String ImageUrl { get; set; } 
         
     }
 }

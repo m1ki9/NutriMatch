@@ -11,15 +11,17 @@ namespace NutriMatch.Data
         public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
         public DbSet<Ingredient> Ingredients { get; set; }
+        
+        public DbSet<RestaurantMeal> RestaurantMeals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
             // Configure manually created food_macronutrients table
             modelBuilder.Entity<Ingredient>()
                 .ToTable("food_macronutrients");
-                
+
             modelBuilder.Entity<Ingredient>()
                 .Property(e => e.Id)
                 .HasColumnName("id");
@@ -27,11 +29,11 @@ namespace NutriMatch.Data
             modelBuilder.Entity<Ingredient>()
                 .Property(e => e.Name)
                 .HasColumnName("food_name");
-            
+
             modelBuilder.Entity<Ingredient>()
                 .Property(e => e.Calories)
                 .HasColumnName("energy_kcal");
-            
+
             modelBuilder.Entity<Ingredient>()
                 .Property(e => e.Protein)
                 .HasColumnName("protein_g");
@@ -42,7 +44,7 @@ namespace NutriMatch.Data
 
             modelBuilder.Entity<Ingredient>()
                 .Property(e => e.Carbs)
-                .HasColumnName("carbohydrates_g");    
+                .HasColumnName("carbohydrates_g");
         }
        
     }

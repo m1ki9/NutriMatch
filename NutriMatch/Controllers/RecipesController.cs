@@ -80,6 +80,24 @@ namespace NutriMatch.Controllers
 
             if (ModelState.IsValid)
             {
+
+                var file = Request.Form.Files.GetFile("RecipeImage");
+                if (file != null && file.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    recipe.ImageUrl = "/images/" + uniqueFileName;
+                } else {
+                    Console.WriteLine("No file uploaded or file is empty.");
+                }
+
                 _context.Add(recipe);
                 await _context.SaveChangesAsync();
                 string selectedIngredients = Request.Form["Ingredients"];
@@ -89,7 +107,7 @@ namespace NutriMatch.Controllers
                 float totalCarbs = 0;
                 float totalFat = 0;
 
-        
+
 
                 foreach (var i in ingredients)
                 {
@@ -103,12 +121,12 @@ namespace NutriMatch.Controllers
 
                     Ingredient tempIngredient = _context.Ingredients.Find(i.Id);
 
-                    
 
-                    totalCalories += ConvertType(tempIngredient.Calories,i.Unit) * i.Quantity;
-                    totalProtein += ConvertType(tempIngredient.Protein,i.Unit) * i.Quantity;
-                    totalCarbs += ConvertType(tempIngredient.Carbs,i.Unit) * i.Quantity;
-                    totalFat += ConvertType(tempIngredient.Fat,i.Unit) * i.Quantity;
+
+                    totalCalories += ConvertType(tempIngredient.Calories, i.Unit) * i.Quantity;
+                    totalProtein += ConvertType(tempIngredient.Protein, i.Unit) * i.Quantity;
+                    totalCarbs += ConvertType(tempIngredient.Carbs, i.Unit) * i.Quantity;
+                    totalFat += ConvertType(tempIngredient.Fat, i.Unit) * i.Quantity;
                 }
 
                 recipe.Calories = totalCalories;
@@ -116,11 +134,15 @@ namespace NutriMatch.Controllers
                 recipe.Carbs = totalCarbs;
                 recipe.Fat = totalFat;
 
+                
+
                 _context.Update(recipe);
 
-                
-                await _context.SaveChangesAsync(); 
+
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+                
+                
             }
             else
             {
@@ -240,7 +262,7 @@ namespace NutriMatch.Controllers
             return suggestions;
         }
 
-        public async Task<ActionResult<List<Recipe>>> Filter()
+        public async Task<ActionResult<List<RestaurantMeal>>> Filter()
         {
             string minCalories = Request.Form["MinCalories"];
             var maxCalories = Request.Form["MaxCalories"];
@@ -264,7 +286,20 @@ namespace NutriMatch.Controllers
             )
             .ToList();
 
-            return filteredRecipes;
+            var filteredRecipes2 = _context.RestaurantMeals
+            .Where(r =>
+            (r.Calories >= int.Parse(minCalories)) &&
+            (r.Calories <= int.Parse(maxCalories)) &&
+            (r.Protein >= int.Parse(minProtein)) &&
+            (r.Protein <= int.Parse(maxProtein)) &&
+            (r.Fat >= int.Parse(minFats)) &&
+            (r.Fat <= int.Parse(maxFats)) &&
+            (r.Carbs >= int.Parse(minCarbs)) &&
+            (r.Carbs <= int.Parse(maxCarbs))
+            )
+            .ToList();
+            
+            return filteredRecipes2;
         }
 
        

@@ -35,6 +35,12 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Rating)
         </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ImageUrl)
+        </dt>
+        <dd>
+            <img src="@Model.ImageUrl" width="200" height="200" />
+        </dd>
         <dt>
             <ul>
             @foreach (var ingredient in Model.RecipeIngredients){
