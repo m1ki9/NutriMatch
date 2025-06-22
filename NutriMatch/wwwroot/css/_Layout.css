@@ -1,0 +1,89 @@
+﻿:root {
+            
+            --dark-green: #27AE60;
+            --light-green: #58D68D;
+            --accent-pink: #2c3534;
+            --light-pink: #bbcabe;
+            --dark-gray: #2C3E50;
+            --light-gray: #ECF0F1;
+        }
+
+
+.navbar {
+            background: white !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding:  0px;
+            height: 80px;
+        }
+
+        .navbar-brand {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-green) !important;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-text {
+            background: linear-gradient(45deg, var(--primary-green), var(--dark-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link{
+            color: black  !important;
+            font-size: 18px  !important;
+            margin-left: 15px;
+        }
+
+ footer {
+            background: var(--dark-gray) !important;
+            color: white;
+            padding: 4rem 0 2rem;
+            
+        }
+
+        footer h5, footer h6 {
+            margin-bottom: 1rem;
+        }
+
+        footer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        footer ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        footer a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 768px) {
+            .signup-title {
+                font-size: 2.5rem;
+            }
+            
+            .share-title {
+                font-size: 2rem;
+            }
+
+            .restaurant-card {
+                min-width: 150px;
+                padding: 1rem;
+            }
+
+            .restaurant-logo {
+                width: 60px;
+                height: 60px;
+            }
+        }

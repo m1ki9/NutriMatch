@@ -1,50 +1,241 @@
-﻿
-@{
-    ViewData["Title"] = "Home Page";
-}
-<html>
-<div class="text-center">
-        <form id="filterForm">
-         <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Calories (Min)</label>
-                <input name="MinCalories" class="form-control" type="number" />
+﻿@model List<NutriMatch.Models.Recipe>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriMatch - Your Recipe Journey</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="~/css/landing-page.css" rel="stylesheet">
+</head>
+<body>
+    <section class="signup-section" style="margin-top: 200px;">
+        <div class="floating-elements">
+            <i class="fas fa-leaf floating-leaf" style="top: 10%; left: 15%; font-size: 2rem;"></i>
+            <i class="fas fa-seedling floating-leaf" style="top: 60%; right: 20%; font-size: 1.5rem; animation-delay: -2s;"></i>
+            <i class="fas fa-leaf floating-leaf" style="top: 30%; right: 10%; font-size: 2.5rem; animation-delay: -4s;"></i>
+        </div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="daily-dish col-lg-6">
+                    <h1 class="signup-title">Create your account</h1>
+                    <h2 class="signup-subtitle">Optimize Your Nutrition</h2>
+                    <p class="signup-description">
+                        Join our macro-focused recipe platform designed for goal-oriented eating. <br/>
+                        As a member, you can
+                        create and manage your own recipes,
+                        rate and review meals from the community,
+                        save your favorite dishes for quick access and
+                        filter recipes by macronutrient profiles that align with your dietary needs
+                    </p>
+                    <button class="btn btn-primary-custom">
+                        Sign up
+                    </button>
+                    <p class="mt-3 text-muted">Already have an account? <a href="#" style="color: var(--primary-green); text-decoration: none;">Log in</a></p>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="position-relative">
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                             alt="Delicious Food Bowl" class="img-fluid rounded-circle" style="width: 300px; height: 300px; object-fit: cover; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                        <div class="position-absolute" style="top: 20px; right: 20px; background: white; border-radius: 50px; padding: 8px 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&q=80" 
+                                     alt="Chef" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+                                <div>
+                                    <small class="fw-bold text-dark d-block">Chef Milan</small>
+                                    <div class="text-warning" style="font-size: 12px;">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-1">  </small>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Calories (Max)</label>
-                <input name="MaxCalories" class="form-control" type="number" />
+        </div>
+    </section>
+    <section class="share-recipe-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="text-center mb-3">
+                                <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                                     alt="Recipe" class="img-fluid rounded" style="width: 100%; height: 150px; object-fit: cover;">
+                            </div>
+                            <h6 class="fw-bold mb-2">Protein pancakes</h6>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">By Kire the chef</small>
+                                <div class="text-warning" style="font-size: 12px;">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="share-title">Share Your Recipes</h2>
+                    <p class="share-description">
+                        Have a recipe that fits your nutrition goals? Share it with the community and help others discover meals that balance flavor and function. Whether it’s high-protein, low-carb, or macro-balanced — your creations make a difference.
+                    </p>
+                    <button class="btn btn-create-recipe">
+                        Create New Recipe
+                    </button>
+                </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Protein (Min)</label>
-                <input name="MinProtein" class="form-control" type="number" />
+        </div>
+    </section>
+    <section class="trending-section">
+        <div class="container">
+            <h2 class="section-title">Trending Foods</h2>
+            <p class="section-subtitle">Discover the most popular recipes shared by our community</p>
+            <div class="row">
+                @foreach (var recipe in Model){ 
+                    <div class="col-md-6 col-lg-4">
+                        <div class="recipe-card">
+                            <button class="favorite-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <img src="@recipe.ImageUrl" class="recipe-image">
+                            <div class="recipe-content">
+                                <div class="chef-badge">User recipe</div>
+                                <h3 class="recipe-title">@recipe.Title</h3>
+                                <div class="recipe-meta">
+                                    <span class="rating">
+                                        <i class="fas fa-star"></i> 4.8
+                                    </span>
+                                    <span><i class="far fa-clock"></i> 25 min</span>
+                                    <span><i class="fas fa-user"></i> Chef Mario</span>
+                                </div>
+                                <div class="calories-info">
+                                    <span class="calories"><i class="fas fa-fire"></i> @recipe.Calories</span>
+                                </div>
+                            </div>
+                            <div class="nutrition-overlay">
+                                <div class="nutrition-content">
+                                    <h4>Nutrition Facts</h4>
+                                    <div class="nutrition-grid">
+                                        <div class="nutrition-item">
+                                            <span class="nutrition-label">Calories</span>
+                                            <span class="nutrition-value">@recipe.Calories</span>
+                                        </div>
+                                        <div class="nutrition-item">
+                                            <span class="nutrition-label">Protein</span>
+                                            <span class="nutrition-value">@recipe.Protein</span>
+                                        </div>
+                                        <div class="nutrition-item">
+                                            <span class="nutrition-label">Carbs</span>
+                                            <span class="nutrition-value">@recipe.Carbs</span>
+                                        </div>
+                                        <div class="nutrition-item">
+                                            <span class="nutrition-label">Fats</span>
+                                            <span class="nutrition-value">@recipe.Fat</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Protein (Max)</label>
-                <input name="MaxProtein" class="form-control" type="number" />
+        </div>
+    </section>
+    <section class="restaurants-section">
+        <div class="container">
+            <h2 class="section-title">Popular Restaurants</h2>
+            <p class="section-subtitle">Explore the most popular restaurants with delicious options</p>
+        </div>
+        <div class="container">
+            <div class="restaurants-container">
+                <div class="restaurant-card">
+                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; font-weight: bold;">
+                        <img src="~/images/mc.png" style="width: 70px;">
+                    </div>
+                    <div class="restaurant-name">McDonald's</div>
+                    <div class="restaurant-items">Fast Food • Burgers</div>
+                    <div class="restaurant-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <i class="far fa-star"></i>
+                        4.2
+                    </div>
+                </div>
+                <div class="restaurant-card">
+                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; font-weight: bold;">
+                        <img src="~/images/kfc.png" style="width: 70px;">
+                    </div>
+                    <div class="restaurant-name">KFC</div>
+                    <div class="restaurant-items">Fried Chicken • Fast Food</div>
+                    <div class="restaurant-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        4.1
+                    </div>
+                </div>
+                <div class="restaurant-card">
+                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: white; font-weight: bold;">
+                        <img src="~/images/bk.png" style="width: 70px;">
+                    </div>
+                    <div class="restaurant-name">Burger King</div>
+                    <div class="restaurant-items">Burgers • Fast Food</div>
+                    <div class="restaurant-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        4.0
+                    </div>
+                </div>
+                <div class="restaurant-card">
+                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1rem; color: white; font-weight: bold;">
+                        <img src="~/images/sub.png" style="width: 70px;">
+                    </div>
+                    <div class="restaurant-name">Subway</div>
+                    <div class="restaurant-items">Sandwiches • Healthy</div>
+                    <div class="restaurant-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        4.3
+                    </div>
+                </div>
+                <div class="restaurant-card">
+                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1rem; color: white; font-weight: bold;">
+                        <img src="~/images/taco.png" style="width: 70px;">
+                    </div>
+                    <div class="restaurant-name">Taco Bell</div>
+                    <div class="restaurant-items">Mexican • Tacos</div>
+                    <div class="restaurant-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        3.9
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Fats (Min)</label>
-                <input name="MinFats" class="form-control" type="number" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Fats (Max)</label>
-                <input name="MaxFats" class="form-control" type="number" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Carbs (Min)</label>
-                <input name="MinCarbs" class="form-control" type="number" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Carbs (Max)</label>
-                <input name="MaxCarbs" class="form-control" type="number" />
-            </div>
-            <div class="col-12 text-end">
-                <button type="button" class="btn btn-primary" id="submitFilter">Search Recipes</button>
-            </div>
-        </form>
-    </div>
-</div>
-<div id="resultsContainer" class="mt-4"></div>
-</div>
-<script src="~/js/filter.js"></script>
-</html>
+        </div>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+   
