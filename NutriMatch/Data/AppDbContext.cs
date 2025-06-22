@@ -8,6 +8,7 @@ namespace NutriMatch.Data
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
+        public DbSet<RestaurantMeal> RestaurantMeals { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -30,7 +31,7 @@ namespace NutriMatch.Data
                 .HasColumnName("total_fat_g");
             modelBuilder.Entity<Ingredient>()
                 .Property(e => e.Carbs)
-                .HasColumnName("carbohydrates_g");    
+                .HasColumnName("carbohydrates_g");
         }
     }
 }

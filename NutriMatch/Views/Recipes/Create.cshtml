@@ -14,7 +14,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -42,6 +42,9 @@
                         <button type="button" class="btn btn-primary" id="addIngredientButton">Add</button>
                     </div>
                     <div class="dropdown" id="ingredientDropdown"></div>
+                </div>
+                <div class="form-group">
+                    <input type="file"  id="recipeImage" name="RecipeImage" />
                 </div>
                 <div class="ingredients-list" id="ingredientsList">
                     <small class="text-muted">Selected ingredients will appear here</small>
