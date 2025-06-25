@@ -12,7 +12,7 @@ namespace NutriMatch.Models
         [Key]
         public int Id { get; set; }
         public String Title { get; set; }
-        public String Instructions { get; set; }
+        public String[]? Instructions { get; set; }
         [ValidateNever]
         public float Rating { get; set; }
         [ValidateNever]
@@ -26,6 +26,7 @@ namespace NutriMatch.Models
         [ValidateNever]
         public float Fat { get; set; }
         [ValidateNever]
+
         public String ImageUrl { get; set; } 
         
     }

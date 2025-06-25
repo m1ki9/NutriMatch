@@ -11,7 +11,9 @@ namespace NutriMatch.Models
         [Key]
         public int Id { get; set; }
 
-        public String Restaurant { get; set; }
+        virtual public int? RestaurantId { get; set; }
+        virtual public Restaurant Restaurant { get; set; } = null!;
+        public String RestaurantName { get; set; }
 
         public String ItemName { get; set; }
 

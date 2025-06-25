@@ -18,6 +18,25 @@ const hiddenInstructionsInput = document.getElementById('selectedInstructions');
 document.addEventListener('DOMContentLoaded', function() {
     initializeSearchFunctionality();
     initializeInstructionsFunctionality();
+    var strr = JSON.parse((document.getElementById('selectedInstructionsScript').innerText))[0];
+    strr = JSON.parse(strr);
+    var strr2 = JSON.parse((document.getElementById('selectedIngredientsScript').innerText));
+    console.log(strr2)
+    strr2.forEach(element => {
+        selectedIngredients.push({
+            Id: element.IngredientId,
+            Name: element.Ingredient.Name,
+            Quantity: element.Quantity,
+            Unit: element.Unit
+        })
+    });
+    updateIngredientsDisplay();
+    updateIngredientsInput();
+    strr.forEach(element => {
+        selectedInstructions.push(element);
+    });
+    updateInstructionsDisplay()
+    updateInstructionsInput()
 });
 function initializeSearchFunctionality() {
     if (addButton) {

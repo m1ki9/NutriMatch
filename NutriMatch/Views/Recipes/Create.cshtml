@@ -6,60 +6,576 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <link href="~/css/recipe-search.css" rel="stylesheet" />
-    <title>Create</title>
+    <title>Create Recipe - NutriMatch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafbfc;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .page-header {
+            margin-bottom: 2.5rem;
+        }
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        .page-subtitle {
+            font-size: 1.125rem;
+            color: #6b7280;
+            font-weight: 400;
+        }
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+        .form-content {
+            padding: 2.5rem;
+        }
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        .input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .input::placeholder {
+            color: #9ca3af;
+        }
+        .textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .flex-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        .flex-1 { flex: 1; }
+        .flex-2 { flex: 2; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: #10b981;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+        }
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+        .items-container {
+            margin-top: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+            min-height: 120px;
+        }
+        .items-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 120px;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.875rem 1rem;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.2s ease;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .item:hover {
+            background: #f9fafb;
+        }
+        .item-content {
+            flex: 1;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        .item-remove {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.75rem;
+        }
+        .item-remove:hover {
+            background: #fee2e2;
+            transform: scale(1.05);
+        }
+        .search-container {
+            position: relative;
+        }
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        .dropdown.show {
+            display: block;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.875rem;
+            color: #374151;
+            transition: background-color 0.2s ease;
+        }
+        .dropdown-item:hover {
+            background: #f9fafb;
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #fafbfc;
+            position: relative;
+        }
+        .file-upload-area:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        .file-upload-area.dragover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        .file-upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            background: #f3f4f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #6b7280;
+        }
+        .file-upload-text {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        .file-upload-hint {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+        .file-input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .form-actions {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            margin-top: 1rem;
+        }
+        .back-link:hover {
+            color: #10b981;
+        }
+        .validation-error {
+            color: #dc2626;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+        @@media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            .form-content {
+                padding: 1.5rem;
+            }
+            .page-title {
+                font-size: 2rem;
+            }
+            .flex-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        .item {
+            animation: slideIn 0.3s ease;
+        }
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .dropdown::-webkit-scrollbar {
+            width: 4px;
+        }
+        .dropdown::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .dropdown::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+        .btn:focus,
+        .input:focus {
+            outline: 2px solid #10b981;
+            outline-offset: 2px;
+        }
+    </style>
 </head>
 <body>
-<h4>Recipe</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Instructions" class="control-label"></label>
-                <input asp-for="Instructions" class="form-control" />
-                <span asp-validation-for="Instructions" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Search Ingredients</label>
-                <div class="search-container">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" class="search-input form-control" placeholder="Type to search ingredients..." id="ingredientSearch" style="flex: 2;">
-                        <select class="form-control" id="ingredientUnit" style="flex: 1;">
-                            <option value="">Select Unit</option>
-                            <option value="g">Grams (g)</option>
-                            <option value="ml">Milliliters (ml)</option>
-                            <option value="oz">Ounce</option>
-                            <option value="tbsp">Tablespoon</option>
-                        </select>
-                        <input type="number" class="form-control" placeholder="Quantity" id="ingredientQuantity" style="flex: 1;" step="0.01" min="0">
-                        <button type="button" class="btn btn-primary" id="addIngredientButton">Add</button>
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">Create Recipe</h1>
+            <p class="page-subtitle">Share your culinary creation with the community</p>
+        </div>
+        <div class="form-card">
+            <div class="form-content">
+                <form asp-action="Create" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="Title" class="label">Recipe Title</label>
+                        <input type="text" 
+                               name="Title" 
+                               id="Title" 
+                               class="input" 
+                               placeholder="Enter your recipe name..."
+                               required />
+                        <div class="validation-error" id="titleValidation"></div>
                     </div>
-                    <div class="dropdown" id="ingredientDropdown"></div>
-                </div>
-                <div class="form-group">
-                    <input type="file"  id="recipeImage" name="RecipeImage" />
-                </div>
-                <div class="ingredients-list" id="ingredientsList">
-                    <small class="text-muted">Selected ingredients will appear here</small>
-                </div>
-                <input type="hidden" id="selectedIngredients" name="Ingredients" />
+                    <div class="form-group">
+                        <label class="label">Instructions</label>
+                        <div class="flex-row">
+                            <textarea class="input textarea flex-1" 
+                                      placeholder="Add a cooking step..." 
+                                      id="instructionInput"></textarea>
+                            <button type="button" class="btn btn-primary" id="addInstructionButton">
+                                Add Step
+                            </button>
+                        </div>
+                        <div class="items-container" id="instructionsList">
+                            <div class="items-empty">No instructions added yet</div>
+                        </div>
+                        <input type="hidden" id="selectedInstructions" name="Instructions" />
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Ingredients</label>
+                        <div class="search-container">
+                            <div class="flex-row">
+                                <input type="text" 
+                                       class="input flex-2" 
+                                       placeholder="Search ingredients..." 
+                                       id="ingredientSearch">
+                                <select class="input flex-1" id="ingredientUnit">
+                                    <option value="">Unit</option>
+                                    <option value="g">Grams</option>
+                                    <option value="ml">Milliliters</option>
+                                    <option value="oz">Ounce</option>
+                                    <option value="tbsp">Tablespoon</option>
+                                    <option value="tsp">Teaspoon</option>
+                                    <option value="cup">Cup</option>
+                                </select>
+                                <input type="number" 
+                                       class="input flex-1" 
+                                       placeholder="Amount" 
+                                       id="ingredientQuantity" 
+                                       step="0.01" 
+                                       min="0">
+                                <button type="button" class="btn btn-primary" id="addIngredientButton">
+                                    Add
+                                </button>
+                            </div>
+                            <div class="dropdown" id="ingredientDropdown"></div>
+                        </div>
+                        <div class="items-container" id="ingredientsList">
+                            <div class="items-empty">No ingredients added yet</div>
+                        </div>
+                        <input type="hidden" id="selectedIngredients" name="Ingredients" />
+                    </div>
+                    <div class="form-group">
+                    <label class="form-label">Recipe Photo</label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <div class="file-upload-icon">📷</div>
+                            <p><strong>Click to upload</strong> or drag and drop</p>
+                            <p>PNG, JPG, GIF up to 10MB</p>
+                            <input  type="file" id="RecipeImage" name="RecipeImage" accept="image/*" style="display: none;">
+                        </div>
+                        <div id="imagePreview" style="margin-top: 1rem; text-align: center;"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary">
+                            Save as Draft
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-large">
+                            Create Recipe
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-         </form>
+        </div>
+        <a href="/Recipes" class="back-link">
+            ← Back to Recipes
+        </a>
     </div>
-</div>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-<script src="~/js/recipe-search.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const aiPictureButton = document.querySelector('.btn-secondary');
+    const titleInput = document.getElementById('Title');
+    const imagePreview = document.getElementById('imagePreview');
+    const fileInput = document.getElementById('RecipeImage');
+    aiPictureButton.textContent = 'Generate AI Picture';
+    aiPictureButton.innerHTML = '🎨 Generate AI Picture';
+    aiPictureButton.addEventListener('click', async function() {
+        const recipeTitle = titleInput.value.trim();
+        if (!recipeTitle) {
+            alert('Please enter a recipe title first!');
+            titleInput.focus();
+            return;
+        }
+        const originalText = aiPictureButton.innerHTML;
+        aiPictureButton.innerHTML = '⏳ Generating...';
+        aiPictureButton.disabled = true;
+        try {
+            await generateAIPicture(recipeTitle);
+        } catch (error) {
+            console.error('Error generating AI picture:', error);
+            alert('Failed to generate AI picture. Please try again.');
+        } finally {
+            aiPictureButton.innerHTML = originalText;
+            aiPictureButton.disabled = false;
+        }
+    });
+    async function generateAIPicture(recipeTitle) {
+        try {
+            const prompt = `A delicious ${recipeTitle} food photography, professional lighting, appetizing, high quality, detailed`;
+            const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=800&height=600&seed=${Math.floor(Math.random() * 1000000)}`;
+            imagePreview.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #10b981; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+                    <p style="color: #6b7280;">Generating AI picture...</p>
+                </div>
+            `;
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function() {
+                imagePreview.innerHTML = `
+                    <img src="${pollinationsUrl}" alt="AI generated ${recipeTitle}" style="max-width: 300px; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <p style="margin-top: 0.5rem; color: #10b981; font-weight: 500;">✓ AI picture generated successfully</p>
+                    <button type="button" onclick="useAIImage('${pollinationsUrl}')" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer;">Use This Image</button>
+                `;
+            };
+            img.onerror = function() {
+                tryAlternativeImageGeneration(recipeTitle);
+            };
+            img.src = pollinationsUrl;
+        } catch (error) {
+            console.error('Error in generateAIPicture:', error);
+            tryAlternativeImageGeneration(recipeTitle);
+        }
+    }
+    async function tryAlternativeImageGeneration(recipeTitle) {
+        try {
+            const foodKeywords = ['food', 'meal', 'dish', 'cooking', 'kitchen', 'restaurant'];
+            const randomKeyword = foodKeywords[Math.floor(Math.random() * foodKeywords.length)];
+            const picsumUrl = `https://picsum.photos/800/600?random=${Date.now()}`;
+            imagePreview.innerHTML = `
+                <img src="${picsumUrl}" alt="Generated image for ${recipeTitle}" style="max-width: 300px; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <p style="margin-top: 0.5rem; color: #10b981; font-weight: 500;">✓ Image generated successfully</p>
+                <button type="button" onclick="useAIImage('${picsumUrl}')" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer;">Use This Image</button>
+            `;
+        } catch (error) {
+            imagePreview.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #dc2626;">
+                    <p>❌ Failed to generate image</p>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">Please try uploading an image manually</p>
+                </div>
+            `;
+        }
+    }
+    window.useAIImage = async function(imageUrl) {
+        try {
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const file = new File([blob], `ai-generated-${Date.now()}.jpg`, { type: 'image/jpeg' });
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+            imagePreview.innerHTML = `
+                <img src="${imageUrl}" alt="Selected AI generated image" style="max-width: 300px; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <p style="margin-top: 0.5rem; color: #10b981; font-weight: 500;">✓ AI image selected for upload</p>
+            `;
+            console.log('AI image set successfully');
+        } catch (error) {
+            console.error('Error setting AI image:', error);
+            alert('Error setting the AI image. Please try again.');
+        }
+    };
+});
+const style = document.createElement('style');
+style.textContent = `
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
+    </script>
+    <script>
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('RecipeImage');
+        const imagePreview = document.getElementById('imagePreview');
+        fileUploadArea.addEventListener('click', () => fileInput.click());
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+        function handleFileSelect(file) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.innerHTML = `
+                        <img src="${e.target.result}" alt="Recipe preview" style="max-width: 300px; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <p style="margin-top: 0.5rem; color: #4CAF50; font-weight: 500;">✓ Image uploaded successfully</p>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 </html>
+<script src="~/js/recipe-search.js"></script>

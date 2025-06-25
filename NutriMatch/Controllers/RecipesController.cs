@@ -35,7 +35,7 @@ namespace NutriMatch.Controllers
             {
                 return NotFound();
             }
-            return View(recipe);
+            return PartialView("RecipeDetailsPartial", recipe);
         }
         public IActionResult Create()
         {
@@ -126,7 +126,10 @@ namespace NutriMatch.Controllers
             {
                 return NotFound();
             }
-            var recipe = await _context.Recipes.FindAsync(id);
+            var recipe = await _context.Recipes
+        .Include(r => r.RecipeIngredients)
+            .ThenInclude(ri => ri.Ingredient)
+        .FirstOrDefaultAsync(r => r.Id == id);
             if (recipe == null)
             {
                 return NotFound();
@@ -141,25 +144,76 @@ namespace NutriMatch.Controllers
             {
                 return NotFound();
             }
+            float ConvertType(float number, string unit)
+            {
+                switch (unit.ToLower())
+                {
+                    case "g":
+                        return number / 100; 
+                    case "ml":
+                        return number / 100; 
+                    case "oz":
+                        return (float)(number * 28.3495 / 100); 
+                    default:
+                        return 0;
+                }
+            }
             if (ModelState.IsValid)
             {
-                try
+                var file = Request.Form.Files.GetFile("RecipeImage");
+                if (file != null && file.Length > 0)
                 {
-                    _context.Update(recipe);
-                    await _context.SaveChangesAsync();
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+                    recipe.ImageUrl = "/images/" + uniqueFileName;
+                } else {
+                    Console.WriteLine("No file uploaded or file is empty.");
                 }
-                catch (DbUpdateConcurrencyException)
+                string selectedIngredients = Request.Form["Ingredients"];
+                List<SelectedIngredient> ingredients = JsonSerializer.Deserialize<List<SelectedIngredient>>(selectedIngredients);
+                float totalCalories = 0;
+                float totalProtein = 0;
+                float totalCarbs = 0;
+                float totalFat = 0;
+                foreach (var i in ingredients)
                 {
-                    if (!RecipeExists(recipe.Id))
+                    _context.RecipeIngredients.Add(new RecipeIngredient
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                        RecipeId = recipe.Id,
+                        IngredientId = i.Id,
+                        Unit = i.Unit,
+                        Quantity = i.Quantity
+                    });
+                    Ingredient tempIngredient = _context.Ingredients.Find(i.Id);
+                    totalCalories += ConvertType(tempIngredient.Calories, i.Unit) * i.Quantity;
+                    totalProtein += ConvertType(tempIngredient.Protein, i.Unit) * i.Quantity;
+                    totalCarbs += ConvertType(tempIngredient.Carbs, i.Unit) * i.Quantity;
+                    totalFat += ConvertType(tempIngredient.Fat, i.Unit) * i.Quantity;
                 }
+                recipe.Calories = totalCalories;
+                recipe.Protein = totalProtein;
+                recipe.Carbs = totalCarbs;
+                recipe.Fat = totalFat;
+                _context.Update(recipe);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                foreach (var key in ModelState.Keys)
+                {
+                    var errors = ModelState[key].Errors;
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($"Key: {key} - Error: {error.ErrorMessage}");
+                    }
+                }
+                Console.WriteLine("Model state is invalid. Please check the input data.");
             }
             return View(recipe);
         }
