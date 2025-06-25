@@ -13,6 +13,8 @@ namespace NutriMatch.Data
         public DbSet<Ingredient> Ingredients { get; set; }
         
         public DbSet<RestaurantMeal> RestaurantMeals { get; set; }
+        
+        public DbSet<Restaurant> Restaurants { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
