@@ -1,0 +1,459 @@
+:root {
+    --primary-green: #2ECC71;
+    --dark-green: #27AE60;
+    --light-green: #58D68D;
+    --light-green-gray: #bbcabe;
+    --dark-gray: #2C3E50;
+    --light-gray: #ECF0F1;
+    --nutri-light-gray: #f3f4f6;
+    --nutri-green-dark: #22c55e;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--light-pink) 0%, white 50%, var(--light-green-gray) 100%);
+    min-height: 100vh;
+}
+
+
+
+.signup-section {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, rgba(255, 235, 238, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border-radius: 50px;
+    margin-bottom: 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.signup-title {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: var(--dark-gray);
+    margin-bottom: 1rem;
+}
+
+.signup-subtitle {
+    font-size: 1.5rem;
+    color: var(--primary-green);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.signup-description {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(45deg, var(--primary-green), var(--dark-green));
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+    background: linear-gradient(45deg, var(--dark-green), var(--primary-green));
+    color: white;
+}
+
+.floating-elements {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.floating-leaf {
+    position: absolute;
+    color: var(--light-green);
+    opacity: 0.3;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+
+.share-recipe-section {
+    padding: 6rem 0;
+    background: white;
+    margin-bottom: 4rem;
+    border-radius: 50px;
+}
+
+.share-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--dark-gray);
+    margin-bottom: 1rem;
+}
+
+.share-description {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.sample-recipe {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border-radius: 30px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    position: relative;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.sample-screen {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.btn-create-recipe {
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-create-recipe:hover {
+    background: var(--dark-green);
+    transform: translateY(-2px);
+    color: white;
+}
+
+
+trending-section {
+    border-radius: 50px;
+    padding: 4rem 0;
+    background: linear-gradient(135deg, rgba(245, 247, 250, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--dark-gray);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+}
+
+.recipe-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+    position: relative;
+    width: 100%;
+    max-width: 417.953px;
+    height: 380px;
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.recipe-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 15px 15px 0 0;
+}
+
+.recipe-content {
+    padding: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.recipe-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.recipe-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.rating {
+    color: #FFD700;
+}
+
+.favorite-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+.favorite-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+}
+
+.favorite-btn i {
+    font-size: 18px;
+    color: #ef4444;
+    transition: all 0.3s ease;
+}
+
+.favorite-btn:hover i {
+    color: #dc2626;
+}
+
+.favorite-btn.active i {
+    color: #ef4444;
+    font-weight: 900;
+}
+
+.chef-badge {
+    background: var(--primary-green);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+
+.calories-info {
+    margin-top: 0.5rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid #eee;
+}
+
+.calories {
+    color: #ff6b35;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.calories i {
+    font-size: 0.8rem;
+}
+
+
+.nutrition-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    border-radius: 15px;
+}
+
+.recipe-card:hover .nutrition-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.nutrition-content {
+    text-align: center;
+    padding: 2rem 1.5rem;
+}
+
+.nutrition-content h4 {
+    color: var(--dark-gray);
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.nutrition-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+.nutrition-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.nutrition-label {
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nutrition-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--primary-green);
+}
+.recipe-card:hover .recipe-content {
+    transform: translateZ(0);
+}
+
+
+.restaurants-section {
+    padding: 4rem 0;
+    background: white;
+}
+
+.restaurants-container {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+}
+
+.restaurant-card {
+    position: absolute;
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    min-width: 200px;
+    text-align: center;
+    cursor: pointer;
+    animation: floatAround 20s infinite linear;
+}
+
+.restaurant-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+.restaurant-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid #f8f9fa;
+}
+
+.restaurant-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.restaurant-items {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.restaurant-rating {
+    color: #FFD700;
+    font-size: 0.9rem;
+}
+
+@keyframes floatAround {
+    0% { transform: translateX(-100px) translateY(0px); }
+    25% { transform: translateX(20vw) translateY(-20px); }
+    50% { transform: translateX(50vw) translateY(10px); }
+    75% { transform: translateX(80vw) translateY(-15px); }
+    100% { transform: translateX(100vw) translateY(0px); }
+}
+
+
+.restaurant-card:nth-child(1) { animation-delay: 0s; top: 20px; }
+.restaurant-card:nth-child(2) { animation-delay: -4s; top: 20px; }
+.restaurant-card:nth-child(3) { animation-delay: -8s; top: 20px; }
+.restaurant-card:nth-child(4) { animation-delay: -12s; top: 20px; }
+.restaurant-card:nth-child(5) { animation-delay: -16s; top: 20px; }
+
+.daily-dish {
+    margin-left: 100px;
+}
+
+
+
+.recipe-macros {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.macro-item {
+    text-align: center;
+    padding: 0.5rem;
+    background: var(--nutri-light-gray);
+    border-radius: 10px;
+}
+
+.macro-value {
+    font-weight: 700;
+    color: var(--nutri-green-dark);
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.macro-label {
+    font-size: 0.8rem;
+    color: var(--nutri-gray);
+    text-transform: uppercase;
+    font-weight: 600;
+    line-height: 1;
+}

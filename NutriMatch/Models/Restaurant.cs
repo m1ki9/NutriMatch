@@ -11,6 +11,8 @@ namespace NutriMatch.Models
 
         public String ImageUrl { get; set; }
 
+        public String Description {get; set; }
+
         virtual public List<RestaurantMeal> RestaurantMeals { get; set; }
     }
 }
