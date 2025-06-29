@@ -1,4 +1,4 @@
-@model List<NutriMatch.Models.Recipe>
+@model List<NutriMatch.Models.Restaurant>
 @{
     Layout = "_Layout";
 }
@@ -7,22 +7,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="~/css/RecipeIndex.css" rel="stylesheet">
-    <title>NutriMatch - Recipes</title>
+    <title>NutriMatch - Restaurants</title>
+    <link href="~/css/RestaurantIndex.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container mt-4">
-        <div class="search-container">
-            <div class="row align-items-center">
-                <div class="col-md-10">
-                    <input type="text" class="form-control search-input" placeholder="Search recipes..." id="searchInput">
-                </div>
-                <div class="col-md-2">
-                    <button class="btn search-btn w-100" onclick="searchRecipes()">
-                        <i class="fas fa-search me-2"></i>Search
-                    </button>
-                </div>
-            </div>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="display-5 fw-bold mb-3">Find Your Perfect Restaurant</h1>
+            <p class="lead text-muted">Discover restaurants with detailed nutritional information for every dish</p>
         </div>
         <div class="filter-section">
             <h4 class="mb-4" style="color: #1f2937; font-weight: 700;">
@@ -85,50 +77,45 @@
                 </div>
             </div>
         </div>
-        <div class="results-count">
-            <i class="fas fa-utensils me-2"></i>Showing <strong> recipes</strong> matching your criteria
-        </div>
-        <div class="recipe-grid" id="recipeGrid">
-            @foreach(var recipe in Model)
-            {
-                <div class="recipe-card" onclick="showRecipeDetails(@recipe.Id)" data-calories="@recipe.Calories" data-protein="@recipe.Protein" data-carbs="@recipe.Carbs" data-fat="@recipe.Fat">
-                    <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite(this)">
-                        <i class="far fa-heart"></i>
-                    </button>
-                    <img src="@recipe.ImageUrl" alt="@recipe.Title" class="recipe-image">
-                    <div class="recipe-content">
-                        <h3 class="recipe-title">@recipe.Title</h3>
-                        <div class="recipe-meta">
-                            <span class="rating">
-                                <i class="fas fa-star"></i> 4.8
-                            </span>
-                            <span><i class="fas fa-user"></i> Chef Mario</span>
-                        </div>
-                        <div class="recipe-macros">
-                            <div class="macro-item">
-                                <div class="macro-value">@recipe.Calories</div>
-                                <div class="macro-label">Cal</div>
+        <div class="row" id="restaurantsGrid">
+            @foreach(var r in Model){
+                <div class="col-md-6 col-lg-4 mb-2">
+                        <div class="restaurant-card" onclick="openMenu(@r.Id)">
+                            <div class="restaurant-info">
+                                <img style="width: 200px;" src="@r.ImageUrl">
                             </div>
-                            <div class="macro-item">
-                                <div class="macro-value">@recipe.Protein</div>
-                                <div class="macro-label">Protein</div>
-                            </div>
-                            <div class="macro-item">
-                                <div class="macro-value">@recipe.Carbs</div>
-                                <div class="macro-label">Carbs</div>
-                            </div>
-                            <div class="macro-item">
-                                <div class="macro-value">@recipe.Fat</div>
-                                <div class="macro-label">Fats</div>
+                            <div class="restaurant-name">@r.Name</div>
+                            <div class="restaurant-items">@r.Description</div>
+                            <div class="restaurant-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <i class="far fa-star"></i>
+                                4.2
                             </div>
                         </div>
                     </div>
-                </div>
             }
         </div>
     </div>
-    <div id="modalWindow"></div>
-    <div id="modalWindowDelete"></div>
-    <script src="~/js/RecipeIndex.js"></script>
+    <div class="modal fade" id="menuModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalRestaurantName"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="filterInfo" class="filter-info" style="display: none;">
+                        <small><i class="fas fa-info-circle me-1"></i>Showing items matching your macro filters</small>
+                    </div>
+                    <div id="menuItems">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   <script src="~/js/RestaurantIndex.js"></script>
 </body>
 </html>

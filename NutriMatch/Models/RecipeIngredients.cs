@@ -22,7 +22,5 @@ namespace NutriMatch.Models
 
         public float Quantity { get; set; }
 
-        [NotMapped]
-        public NutritionInfo NutritionInfo { get; set; } 
     }
 }

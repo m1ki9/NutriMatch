@@ -6,10 +6,13 @@
     <title>@ViewData["Title"] - NutriMatch</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/NutriMatch.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/_Layout.css"  />
 </head>
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light fixed-top">
@@ -23,21 +26,20 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="/Home">Home</a>
+                            <a class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active-glow" : "")" href="/Home">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/Recipes" >Recipes</a>
+                            <a class="nav-link @(currentController == "Recipes" && currentAction == "Index" ? "active-glow" : "")" href="/Recipes" >Recipes</a>
                         </li>
                          <li class="nav-item">
-                            <a class="nav-link" href="/Recipes/Create">Add Recipe</a>
+                            <a class="nav-link @(currentController == "Recipes" && currentAction == "Create" ? "active-glow" : "")" href="/Recipes/Create">Add Recipe</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Restaurants</a>
+                            <a class="nav-link @(currentController == "Restaurants" && currentAction == "Index" ? "active-glow" : "") " href="/Restaurants">Restaurants</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">My Account</a>
                         </li>
-                       
                     </ul>
                 </div>
             </div>
@@ -48,8 +50,7 @@
             @RenderBody()
         </main>
     </div>
-
-    <footer class="bg-dark text-light py-5">
+    <footer class="text-light py-5">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
@@ -95,9 +96,6 @@
             </div>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

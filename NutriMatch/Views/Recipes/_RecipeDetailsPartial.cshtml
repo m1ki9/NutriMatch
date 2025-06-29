@@ -1,0 +1,140 @@
+@model NutriMatch.Models.Recipe
+<link href="~/css/_RecipeDetailsPartial.css" rel="stylesheet" />
+<div class="modal fade" id="recipeModal" tabindex="-1" aria-labelledby="recipeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="recipe-hero">
+                    <div class="recipe-image-container">
+                        <img src="@Model.ImageUrl" alt="@Model.Title" class="recipe-image-details" style="width: 100%;">
+                    </div>
+                    <div class="recipe-info">
+                            <div>
+                                <div class="chef-badge">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&q=80" class="chef-avatar">
+                                    Chef Milan
+                                </div>
+                                <h2 class="recipe-title-details">@Model.Title</h2>
+                                <div class="recipe-rating">
+                                    <span class="rating-label">Rating:</span>
+                                    <span class="rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </span>
+                                    <span class="rating-value">(4.2)</span>
+                                </div>
+                            </div>
+                            <div class="recipe-actions">
+                                <button onclick="location.href='/Recipes/Edit/@Model.Id'" class="action-btn edit-btn"  title="Edit Recipe">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn favorite-btn-details" title="Add to Favorites">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button onclick="openDeleteModal('@Model.Id')" class="action-btn delete-btn" title="Delete Recipe">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="nutrition-card">
+                            <h4 class="section-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Nutrition Facts
+                            </h4>
+                            <div class="nutrition-grid">
+                                <div class="nutrition-item">
+                                    <div class="nutrition-icon">
+                                        <i class="fas fa-fire me-1" style="color: #ef4444;"></i>
+                                    </div>
+                                    <div class="nutrition-value">@Model.Calories</div>
+                                    <div class="nutrition-label">Calories</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-icon">
+                                        <i class="fas fa-drumstick-bite me-1" style="color: #8b5cf6;"></i>
+                                    </div>
+                                    <div class="nutrition-value">@Model.Protein</div>
+                                    <div class="nutrition-label">Protein</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-icon">
+                                        <i class="fas fa-bread-slice me-1" style="color: #f59e0b;"></i>
+                                    </div>
+                                    <div class="nutrition-value">@Model.Carbs</div>
+                                    <div class="nutrition-label">Carbs</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-icon">
+                                        <i class="fas fa-tint me-1" style="color: #e5eb4dfa;"></i>
+                                    </div>
+                                    <div class="nutrition-value">@Model.Fat</div>
+                                    <div class="nutrition-label">Fat</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        <div class="col-md-8">
+                        <div class="ingredients-list">
+                            <h4 class="section-title">
+                                <i class="fas fa-list-ul"></i>
+                                Ingredients
+                            </h4>
+                            @if (Model.RecipeIngredients != null && Model.RecipeIngredients.Any())
+                            {
+                                @for (int i = 0; i < Model.RecipeIngredients.Count; i++)
+                                {
+                                    <div class="ingredient-item">
+                                        <input type="checkbox" class="ingredient-checkbox" id="ingredient@(i + 1)"> 
+                                        <label for="ingredient@(i + 1)">@Model.RecipeIngredients[i].Ingredient.Name, @Model.RecipeIngredients[i].Quantity @Model.RecipeIngredients[i].Unit </label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="instructions-list">
+                            <h4 class="section-title">
+                                <i class="fas fa-clipboard-list"></i>
+                                Instructions
+                            </h4>
+                            @{
+                                var instructions = System.Text.Json.JsonSerializer.Deserialize<List<string>>(Model.Instructions[0]);
+                            }
+                            @for(var i = 0;  i < instructions.Count; i++){
+                                <div class="instruction-item" style="display: flex; flex-wrap: wrap; align-items: flex-start; background-color: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 8px; border-left: 4px solid #10b981;">
+                                    <span class="instruction-number" style="background-color: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 10px; flex-shrink: 0;">@(i + 1)</span>
+                                    <span class="instruction-text" style="flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.4;">
+                                    @instructions[i]</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const label = this.nextElementSibling;
+            if (this.checked) {
+                label.style.textDecoration = 'line-through';
+                label.style.opacity = '0.6';
+            } else {
+                label.style.textDecoration = 'none';
+                label.style.opacity = '1';
+            }
+        });
+    });
+    document.getElementById('recipeModal').addEventListener('shown.bs.modal', function () {
+        this.querySelector('.modal-body').scrollTop = 0;
+    });
+</script>

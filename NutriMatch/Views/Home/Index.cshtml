@@ -1,13 +1,11 @@
-﻿@model List<NutriMatch.Models.Recipe>
+﻿@model NutriMatch.Models.HomeViewModel
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NutriMatch - Your Recipe Journey</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="~/css/landing-page.css" rel="stylesheet">
+    <link href="~/css/HomeIndex.css" rel="stylesheet">
 </head>
 <body>
     <section class="signup-section" style="margin-top: 200px;">
@@ -64,8 +62,8 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <div class="phone-mockup">
-                        <div class="phone-screen">
+                    <div class="sample-recipe">
+                        <div class="sample-screen">
                             <div class="text-center mb-3">
                                 <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
                                      alt="Recipe" class="img-fluid rounded" style="width: 100%; height: 150px; object-fit: cover;">
@@ -101,7 +99,7 @@
             <h2 class="section-title">Trending Foods</h2>
             <p class="section-subtitle">Discover the most popular recipes shared by our community</p>
             <div class="row">
-                @foreach (var recipe in Model){ 
+                @foreach (var recipe in Model.Recipes){ 
                     <div class="col-md-6 col-lg-4">
                         <div class="recipe-card">
                             <button class="favorite-btn">
@@ -109,17 +107,32 @@
                             </button>
                             <img src="@recipe.ImageUrl" class="recipe-image">
                             <div class="recipe-content">
-                                <div class="chef-badge">User recipe</div>
                                 <h3 class="recipe-title">@recipe.Title</h3>
                                 <div class="recipe-meta">
                                     <span class="rating">
                                         <i class="fas fa-star"></i> 4.8
                                     </span>
-                                    <span><i class="far fa-clock"></i> 25 min</span>
                                     <span><i class="fas fa-user"></i> Chef Mario</span>
                                 </div>
                                 <div class="calories-info">
-                                    <span class="calories"><i class="fas fa-fire"></i> @recipe.Calories</span>
+                                    <div class="recipe-macros">
+                                        <div class="macro-item">
+                                            <div class="macro-value">@recipe.Calories</div>
+                                            <div class="macro-label">Cal</div>
+                                        </div>
+                                        <div class="macro-item">
+                                            <div class="macro-value">@recipe.Protein</div>
+                                            <div class="macro-label">Protein</div>
+                                        </div>
+                                        <div class="macro-item">
+                                            <div class="macro-value">@recipe.Carbs</div>
+                                            <div class="macro-label">Carbs</div>
+                                        </div>
+                                        <div class="macro-item">
+                                            <div class="macro-value">@recipe.Fat</div>
+                                            <div class="macro-label">Fats</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="nutrition-overlay">
@@ -157,85 +170,26 @@
             <p class="section-subtitle">Explore the most popular restaurants with delicious options</p>
         </div>
         <div class="container">
-            <div class="restaurants-container">
-                <div class="restaurant-card">
-                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; font-weight: bold;">
-                        <img src="~/images/mc.png" style="width: 70px;">
+            <div class="restaurants-container" onclick="window.location.href='@Url.Action("Index", "Restaurants")'" style="cursor: pointer;">
+                @foreach(var restaurant in Model.Restaurants){
+                    <div class="restaurant-card">
+                        <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; font-weight: bold;">
+                            <img src="@restaurant.ImageUrl" style="width: 70px;">
+                        </div>
+                        <div class="restaurant-name">@restaurant.Name</div>
+                        <div class="restaurant-items">@restaurant.Description</div>
+                        <div class="restaurant-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <i class="far fa-star"></i>
+                            4.2
+                        </div>
                     </div>
-                    <div class="restaurant-name">McDonald's</div>
-                    <div class="restaurant-items">Fast Food • Burgers</div>
-                    <div class="restaurant-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                        <i class="far fa-star"></i>
-                        4.2
-                    </div>
-                </div>
-                <div class="restaurant-card">
-                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; font-weight: bold;">
-                        <img src="~/images/kfc.png" style="width: 70px;">
-                    </div>
-                    <div class="restaurant-name">KFC</div>
-                    <div class="restaurant-items">Fried Chicken • Fast Food</div>
-                    <div class="restaurant-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="far fa-star"></i>
-                        4.1
-                    </div>
-                </div>
-                <div class="restaurant-card">
-                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: white; font-weight: bold;">
-                        <img src="~/images/bk.png" style="width: 70px;">
-                    </div>
-                    <div class="restaurant-name">Burger King</div>
-                    <div class="restaurant-items">Burgers • Fast Food</div>
-                    <div class="restaurant-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="far fa-star"></i>
-                        4.0
-                    </div>
-                </div>
-                <div class="restaurant-card">
-                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1rem; color: white; font-weight: bold;">
-                        <img src="~/images/sub.png" style="width: 70px;">
-                    </div>
-                    <div class="restaurant-name">Subway</div>
-                    <div class="restaurant-items">Sandwiches • Healthy</div>
-                    <div class="restaurant-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                        4.3
-                    </div>
-                </div>
-                <div class="restaurant-card">
-                    <div class="restaurant-logo" style="background: display: flex; align-items: center; justify-content: center; font-size: 1rem; color: white; font-weight: bold;">
-                        <img src="~/images/taco.png" style="width: 70px;">
-                    </div>
-                    <div class="restaurant-name">Taco Bell</div>
-                    <div class="restaurant-items">Mexican • Tacos</div>
-                    <div class="restaurant-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="far fa-star"></i>
-                        3.9
-                    </div>
-                </div>
+                }
             </div>
         </div>
-    </section>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    </section>    
 </body>
    
