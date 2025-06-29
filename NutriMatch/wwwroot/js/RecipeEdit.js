@@ -1,6 +1,3 @@
-// Recipe Search JavaScript Functionality
-
-// Initialize variables
 let selectedIngredients = [];
 let selectedInstructions = [];
 let searchTimeout;
@@ -8,7 +5,6 @@ let currentFocus = -1;
 let selectedIngredient = null;
 
 
-// DOM Elements
 const ingredientSearch = document.getElementById('ingredientSearch');
 const ingredientDropdown = document.getElementById('ingredientDropdown');
 const ingredientsList = document.getElementById('ingredientsList');
@@ -16,14 +12,15 @@ const hiddenIngredientsInput = document.getElementById('selectedIngredients');
 const addButton = document.getElementById('addIngredientButton');
 const qtyInput = document.getElementById('ingredientQuantity');
 const unitSelect = document.getElementById('ingredientUnit');
-
-// Instructions elements
 const instructionInput = document.getElementById('instructionInput');
 const addInstructionButton = document.getElementById('addInstructionButton');
 const instructionsList = document.getElementById('instructionsList');
 const hiddenInstructionsInput = document.getElementById('selectedInstructions');
+const fileUploadArea = document.getElementById('fileUploadArea');
+const fileInput = document.getElementById('RecipeImage');
+const imagePreview = document.getElementById('imagePreview');
 
-// Initialize when DOM is loaded
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeSearchFunctionality();
     initializeInstructionsFunctionality();
@@ -54,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeSearchFunctionality() {
-    // Add ingredient button event listener
     if (addButton) {
         addButton.addEventListener('click', function() {
             if (selectedIngredient && qtyInput && unitSelect) {
@@ -72,12 +68,11 @@ function initializeSearchFunctionality() {
         });
     }
 
-    // Ingredient search event listeners
     if (ingredientSearch) {
         ingredientSearch.addEventListener('input', function() {
             const query = this.value.trim();
             currentFocus = -1;
-            selectedIngredient = null; // Reset selected ingredient when typing
+            selectedIngredient = null; 
             
             if (query === '') {
                 hideDropdown(ingredientDropdown);
@@ -101,7 +96,7 @@ function initializeSearchFunctionality() {
         });
     }
 
-    // Hide dropdowns when clicking outside
+    
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.search-container')) {
             hideDropdown(ingredientDropdown);
@@ -110,14 +105,12 @@ function initializeSearchFunctionality() {
 }
 
 function initializeInstructionsFunctionality() {
-    // Add instruction button event listener
     if (addInstructionButton) {
         addInstructionButton.addEventListener('click', function() {
             addInstruction();
         });
     }
 
-    // Add instruction on Enter key press
     if (instructionInput) {
         instructionInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
@@ -128,7 +121,7 @@ function initializeInstructionsFunctionality() {
     }
 }
 
-// Search ingredients function
+
 async function searchIngredients(query) {
     if (!ingredientDropdown) return;
 
@@ -136,7 +129,7 @@ async function searchIngredients(query) {
         ingredientDropdown.innerHTML = '<div class="loading">Loading...</div>';
         showDropdown(ingredientDropdown);
 
-        // Fixed: Use GET method and correct endpoint
+       
         const response = await fetch(`/Recipes/getSuggestions?query=${encodeURIComponent(query)}`, {
             method: 'GET',
             headers: {
@@ -159,7 +152,7 @@ async function searchIngredients(query) {
     }
 }
 
-// Display search suggestions
+
 function displaySuggestions(suggestions, query) {
     if (!ingredientDropdown) return;
 
@@ -176,16 +169,13 @@ function displaySuggestions(suggestions, query) {
         item.className = 'dropdown-item';
         item.setAttribute('data-index', index);
         
-        // Handle both string and object responses
         const name = typeof suggestion === 'string' ? suggestion : suggestion.name;
         const id = typeof suggestion === 'object' ? suggestion.id : null;
         
-        // Highlight matching text
-        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        const regex = new RegExp(`(${query})`, 'gi');
         const highlightedText = name.replace(regex, '<strong>$1</strong>');
         item.innerHTML = highlightedText;
         
-        // Add click event listener
         item.addEventListener('click', function() {
             selectedIngredient = {
                 id: id,
@@ -201,7 +191,7 @@ function displaySuggestions(suggestions, query) {
     showDropdown(ingredientDropdown);
 }
 
-// Handle keyboard navigation
+
 function handleKeyNavigation(e, dropdownElement) {
     if (!dropdownElement) return;
 
@@ -236,26 +226,26 @@ function handleKeyNavigation(e, dropdownElement) {
     }
 }
 
-// Set active item for keyboard navigation
+
 function setActive(items) {
-    // Remove highlighting from all items
+    
     items.forEach(item => item.classList.remove('highlighted'));
     
-    // Highlight current item
+    
     if (currentFocus >= 0 && currentFocus < items.length) {
         items[currentFocus].classList.add('highlighted');
         items[currentFocus].scrollIntoView({ block: 'nearest' });
     }
 }
 
-// Add ingredient to selection
+
 function addIngredient(ingredient, quantity, unit) {
     if (!ingredient || !ingredient.name) {
         console.error('Invalid ingredient data');
         return;
     }
 
-    // Check if ingredient already exists
+    
     const existingIngredient = selectedIngredients.find(item => item.Id === ingredient.id);
     
     if (existingIngredient) {
@@ -263,7 +253,7 @@ function addIngredient(ingredient, quantity, unit) {
         return;
     }
 
-    // Add new ingredient
+    
     const newIngredient = {
         Id: ingredient.id,
         Name: ingredient.name,
@@ -275,7 +265,7 @@ function addIngredient(ingredient, quantity, unit) {
     updateIngredientsDisplay();
     updateIngredientsInput();
 
-    // Clear form fields
+    
     if (ingredientSearch) ingredientSearch.value = '';
     if (qtyInput) qtyInput.value = '';
     if (unitSelect) unitSelect.value = '';
@@ -285,14 +275,14 @@ function addIngredient(ingredient, quantity, unit) {
     currentFocus = -1;
 }
 
-// Remove ingredient from selection
+
 function removeIngredient(ingredientName) {
     selectedIngredients = selectedIngredients.filter(item => item.Name !== ingredientName);
     updateIngredientsDisplay();
     updateIngredientsInput();
 }
 
-// Add instruction to selection
+
 function addInstruction() {
     if (!instructionInput) return;
 
@@ -303,7 +293,6 @@ function addInstruction() {
         return;
     }
 
-    // Check if instruction already exists
     if (selectedInstructions.includes(instruction)) {
         alert('This instruction is already added.');
         return;
@@ -313,18 +302,15 @@ function addInstruction() {
     updateInstructionsDisplay();
     updateInstructionsInput();
 
-    // Clear input field
     instructionInput.value = '';
 }
 
-// Remove instruction from selection
 function removeInstruction(instructionIndex) {
     selectedInstructions.splice(instructionIndex, 1);
     updateInstructionsDisplay();
     updateInstructionsInput();
 }
 
-// Update ingredients display
 function updateIngredientsDisplay() {
     if (!ingredientsList) return;
 
@@ -333,8 +319,8 @@ function updateIngredientsDisplay() {
     } else {
         ingredientsList.innerHTML = selectedIngredients.map(ingredient => 
             `<span class="ingredient-tag" style="display: inline-block; background-color: #e3f2fd; padding: 5px 10px; margin: 2px; border-radius: 15px; font-size: 14px;">
-                ${escapeHtml(ingredient.Quantity)} ${escapeHtml(ingredient.Unit)} of ${escapeHtml(ingredient.Name)}
-                <span class="remove" onclick="removeIngredient('${escapeHtml(ingredient.Name)}')" 
+                ${ingredient.Quantity} ${ingredient.Unit} of ${ingredient.Name}
+                <span class="remove" onclick="removeIngredient('${ingredient.Name}')" 
                       style="cursor: pointer; margin-left: 8px; color: #dc3545; font-weight: bold;" 
                       title="Remove ingredient">&times;</span>
             </span>`
@@ -342,7 +328,6 @@ function updateIngredientsDisplay() {
     }
 }
 
-// Update instructions display
 function updateInstructionsDisplay() {
     if (!instructionsList) return;
 
@@ -353,7 +338,7 @@ function updateInstructionsDisplay() {
             `<div class="instruction-item" style="display: flex; flex-wrap: wrap; align-items: flex-start; background-color: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 8px; border-left: 4px solid #10b981;">
                 <span class="instruction-number" style="background-color: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 10px; flex-shrink: 0;">${index + 1}</span>
                 <span class="instruction-text" style="flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.4;">
-${escapeHtml(instruction)}</span>
+${instruction}</span>
                 <span class="remove" onclick="removeInstruction(${index})" 
                       style="cursor: pointer; margin-left: 10px; color: #dc3545; font-weight: bold; font-size: 18px;" 
                       title="Remove instruction">&times;</span>
@@ -362,7 +347,6 @@ ${escapeHtml(instruction)}</span>
     }
 }
 
-// Update hidden input with selected ingredients
 function updateIngredientsInput() {
     if (hiddenIngredientsInput) {
         hiddenIngredientsInput.value = JSON.stringify(selectedIngredients);
@@ -370,7 +354,6 @@ function updateIngredientsInput() {
     }
 }
 
-// Update hidden input with selected instructions
 function updateInstructionsInput() {
     if (hiddenInstructionsInput) {
         hiddenInstructionsInput.value = JSON.stringify(selectedInstructions);
@@ -378,14 +361,12 @@ function updateInstructionsInput() {
     }
 }
 
-// Show dropdown
 function showDropdown(dropdownElement) {
     if (dropdownElement) {
         dropdownElement.style.display = 'block';
     }
 }
 
-// Hide dropdown
 function hideDropdown(dropdownElement) {
     if (dropdownElement) {
         dropdownElement.style.display = 'none';
@@ -393,15 +374,44 @@ function hideDropdown(dropdownElement) {
     currentFocus = -1;
 }
 
-// Utility function to escape HTML
-function escapeHtml(text) {
-    if (text === null || text === undefined) return '';
-    const div = document.createElement('div');
-    div.textContent = text.toString();
-    return div.innerHTML;
+
+
+fileUploadArea.addEventListener('click', () => fileInput.click());
+
+fileUploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    fileUploadArea.classList.add('dragover');
+});
+
+fileUploadArea.addEventListener('dragleave', () => {
+    fileUploadArea.classList.remove('dragover');
+});
+
+fileUploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileUploadArea.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFileSelect(files[0]);
+    }
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+        handleFileSelect(e.target.files[0]);
+    }
+});
+
+function handleFileSelect(file) {
+    if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.innerHTML = `
+                <img src="${e.target.result}" alt="Recipe preview" style="max-width: 300px; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <p style="margin-top: 0.5rem; color: #4CAF50; font-weight: 500;">✓ Image uploaded successfully</p>
+            `;
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
-// Utility function to escape RegExp special characters
-function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
