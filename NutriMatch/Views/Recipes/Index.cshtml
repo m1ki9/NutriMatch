@@ -11,16 +11,12 @@
     <title>NutriMatch - Recipes</title>
 </head>
 <body>
+    @Html.AntiForgeryToken()
     <div class="container mt-4">
         <div class="search-container">
             <div class="row align-items-center">
-                <div class="col-md-10">
+                <div class="col-md-12">
                     <input type="text" class="form-control search-input" placeholder="Search recipes..." id="searchInput">
-                </div>
-                <div class="col-md-2">
-                    <button class="btn search-btn w-100" onclick="searchRecipes()">
-                        <i class="fas fa-search me-2"></i>Search
-                    </button>
                 </div>
             </div>
         </div>
@@ -85,24 +81,34 @@
                 </div>
             </div>
         </div>
-        <div class="results-count">
+        <div class=" d-flex justify-content-between align-items-center mb-4">
+            <div class="results-count">
             <i class="fas fa-utensils me-2"></i>Showing <strong> recipes</strong> matching your criteria
+            </div>
+            <div class="col-md-4">
+                    <button class="btn btn-outline-success w-100" id="favoritesToggle" onclick="toggleFavoritesFilter()">
+                        <i class="fas fa-heart me-2"></i>Show Favorites Only
+                    </button>
+            </div>
         </div>
         <div class="recipe-grid" id="recipeGrid">
             @foreach(var recipe in Model)
             {
-                <div class="recipe-card" onclick="showRecipeDetails(@recipe.Id)" data-calories="@recipe.Calories" data-protein="@recipe.Protein" data-carbs="@recipe.Carbs" data-fat="@recipe.Fat">
-                    <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite(this)">
-                        <i class="far fa-heart"></i>
-                    </button>
+                var isFavorited = ViewBag.FavoriteRecipeIds != null && ((List<int>)ViewBag.FavoriteRecipeIds).Contains(recipe.Id);
+                <div class="recipe-card" onclick="showRecipeDetails(@recipe.Id,false)" data-calories="@recipe.Calories" data-protein="@recipe.Protein" data-carbs="@recipe.Carbs" data-fat="@recipe.Fat">
+                @if(recipe.User.Id != ViewBag.userId){
+                    <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavoriteFromIndex(this, @recipe.Id)" data-recipe-id="@recipe.Id" data-favorited="@isFavorited.ToString().ToLower()">
+                        <i class="@(isFavorited ? "fas" : "far") fa-heart"></i>
+                    </button>}
                     <img src="@recipe.ImageUrl" alt="@recipe.Title" class="recipe-image">
                     <div class="recipe-content">
                         <h3 class="recipe-title">@recipe.Title</h3>
                         <div class="recipe-meta">
                             <span class="rating">
-                                <i class="fas fa-star"></i> 4.8
+                                <i class="fas fa-star"></i> @recipe.Rating
                             </span>
-                            <span><i class="fas fa-user"></i> Chef Mario</span>
+                            <span><i class="fas fa-user"></i>@recipe.User.UserName</span>
+                            <span><i class="fas fa-calendar"> </i> @recipe.CreatedAt.ToString("MMM dd, yyyy")</span>
                         </div>
                         <div class="recipe-macros">
                             <div class="macro-item">
@@ -128,7 +134,6 @@
         </div>
     </div>
     <div id="modalWindow"></div>
-    <div id="modalWindowDelete"></div>
     <script src="~/js/RecipeIndex.js"></script>
 </body>
 </html>

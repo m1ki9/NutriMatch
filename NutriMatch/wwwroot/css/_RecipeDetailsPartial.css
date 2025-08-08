@@ -70,6 +70,9 @@
     .favorite-btn-details {
         background: #e91e63;
         color: white;
+        border-radius: 10px !important;
+        height: 40px !important;
+        width: 40px !important;
     }
 
     .favorite-btn-details:hover {

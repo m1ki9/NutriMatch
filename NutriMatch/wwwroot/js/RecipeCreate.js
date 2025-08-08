@@ -382,4 +382,27 @@ function handleFileSelect(file) {
         };
         reader.readAsDataURL(file);
     }
-}    
+}
+
+function validateInstructions() {
+    const instructionsContainer = document.getElementById('instructionsList');
+    const instructionsInput = document.getElementById('selectedInstructions');
+    const hasInstructions = instructionsInput.value && 
+                           instructionsInput.value !== '[]' && 
+                           instructionsInput.value.trim() !== '';
+    
+    if (!hasInstructions) {
+        instructionsContainer.innerHTML = '<div class="items-empty error">Please add at least one instruction step</div>';
+        alert('Please fill in the instructions');
+        return false;
+    }
+    return true;
+}
+
+
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (!validateInstructions()) {
+        e.preventDefault();
+        return false;
+    }
+});
