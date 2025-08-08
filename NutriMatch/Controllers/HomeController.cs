@@ -16,9 +16,17 @@ namespace MyApp.Namespace
 
         public async Task<IActionResult> Index()
         {   
+            var recipes = await _context.Recipes.Include(r => r.User).Include(r => r.Ratings).Take(6).ToListAsync();
+            foreach (var recipe in recipes)
+            {
+                recipe.Rating = recipe.Ratings.Any() ? recipe.Ratings.Average(r => r.Rating) : 0;
+            }
             var model = new HomeViewModel
             {
-                Recipes = await _context.Recipes.Take(6).ToListAsync(),
+
+               
+
+                Recipes = recipes,
                 Restaurants = await _context.Restaurants.ToListAsync()                
             };
             return View(model);

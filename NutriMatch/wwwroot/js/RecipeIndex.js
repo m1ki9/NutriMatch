@@ -32,6 +32,23 @@ function showRecipeDetails(recipeId) {
             const modalContainer = document.getElementById('modalWindow');
             modalContainer.innerHTML = html;
             
+
+            // Evaluate all inline <script> tags in the fetched partial
+            const scripts = modalContainer.querySelectorAll("script");
+            scripts.forEach(script => {
+                const newScript = document.createElement("script");
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
+                }
+                document.body.appendChild(newScript);
+                // Optionally remove it right after execution
+                document.body.removeChild(newScript);
+            });
+
+
+
             const modalElement = modalContainer.querySelector('.modal');
             if (modalElement) {
                 const modal = new bootstrap.Modal(modalElement);
@@ -55,20 +72,20 @@ function showRecipeDetails(recipeId) {
             alert("Failed to load recipe details. Please try again.");
             clickedCard.classList.remove('loading');
         });
-    }
-
-function toggleFavorite(button) {
-    const icon = button.querySelector('i');
-    if (icon.classList.contains('far')) {
-        icon.classList.remove('far');
-        icon.classList.add('fas');
-        button.classList.add('active');
-    } else {
-        icon.classList.remove('fas');
-        icon.classList.add('far');
-        button.classList.remove('active');
-    }
 }
+
+// function toggleFavorite(button) {
+//     const icon = button.querySelector('i');
+//     if (icon.classList.contains('far')) {
+//         icon.classList.remove('far');
+//         icon.classList.add('fas');
+//         button.classList.add('active');
+//     } else {
+//         icon.classList.remove('fas');
+//         icon.classList.add('far');
+//         button.classList.remove('active');
+//     }
+// }
 
 
 
@@ -137,6 +154,10 @@ function filterRecipes() {
         const recipeCarbs = parseInt(card.dataset.carbs) || 0;
         const recipeFats = parseInt(card.dataset.fat) || 0;
         
+        // Get favorite status from the favorite button
+        const favoriteButton = card.querySelector('.favorite-btn');
+        const isFavorited = favoriteButton.getAttribute('data-favorited') === 'true';
+        
         const matchesSearch = searchTerm === '' || title.includes(searchTerm);
         
         const matchesMacros = 
@@ -145,7 +166,10 @@ function filterRecipes() {
             recipeCarbs >= carbs.min && recipeCarbs <= carbs.max &&
             recipeFats >= fats.min && recipeFats <= fats.max;
         
-        if (matchesSearch && matchesMacros) {
+        // Add favorites filter check
+        const matchesFavorites = !showingFavoritesOnly || isFavorited;
+        
+        if (matchesSearch && matchesMacros && matchesFavorites) {
             card.style.display = 'block';
             visibleCount++;
         } else {
@@ -170,6 +194,11 @@ function resetFilters() {
     document.getElementById('fatsMax').value = 150;
     document.getElementById('searchInput').value = '';
     
+    // Reset favorites filter if active
+    if (showingFavoritesOnly) {
+        toggleFavoritesFilter();
+    }
+    
     updateSlider('calories');
     updateSlider('protein');
     updateSlider('carbs');
@@ -178,7 +207,7 @@ function resetFilters() {
     filterRecipes();
 }
 
-function openDeleteModal(recipeId) {
+function openDeleteModal(recipeId,isOwner) {
     const deleteButton = event.target.closest('button');
     deleteButton.classList.add('loading');
 
@@ -195,7 +224,7 @@ function openDeleteModal(recipeId) {
         }
     }
 
-    fetch(`/Recipes/Delete/${recipeId}`)
+    fetch(`/Recipes/Details/${recipeId}/${isOwner}`)
         .then(response => response.text())
         .then(html => {
             const deleteModalContainer = document.getElementById('modalWindowDelete');
@@ -236,3 +265,112 @@ function openDeleteModal(recipeId) {
 }
 
 
+
+async function toggleFavoriteFromIndex(button, recipeId) {
+    try {
+        // Get the anti-forgery token
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        
+        const response = await fetch('/Recipes/ToggleFavorite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': token
+            },
+            body: JSON.stringify({ recipeId: recipeId })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Update the button's appearance
+            const heartIcon = button.querySelector('i');
+            const isFavorited = result.isFavorited;
+            
+            // Update the icon class
+            if (isFavorited) {
+                heartIcon.classList.remove('far');
+                heartIcon.classList.add('fas');
+                button.setAttribute('data-favorited', 'true');
+            } else {
+                heartIcon.classList.remove('fas');
+                heartIcon.classList.add('far');
+                button.setAttribute('data-favorited', 'false');
+            }
+
+            // If showing favorites only, re-filter to update display
+            if (showingFavoritesOnly) {
+                setTimeout(() => filterRecipes(), 100);
+            }
+
+            // Optional: Show a brief success message
+            showToast(result.message, 'success');
+            
+        } else {
+            // Handle error
+            showToast(result.message || 'Failed to update favorite', 'error');
+        }
+    } catch (error) {
+        console.error('Error toggling favorite:', error);
+        showToast('An error occurred while updating favorites', 'error');
+    }
+}
+
+// Optional: Simple toast notification function
+function showToast(message, type = 'info') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 4px;
+        color: white;
+        font-weight: 500;
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    
+    // Set background color based on type
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#3b82f6'
+    };
+    toast.style.backgroundColor = colors[type] || colors.info;
+    
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // Fade in
+    setTimeout(() => toast.style.opacity = '1', 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+}
+
+
+let showingFavoritesOnly = false;
+
+// Add this function to your existing RecipeIndex.js file
+function toggleFavoritesFilter() {
+    const button = document.getElementById('favoritesToggle');
+    
+    showingFavoritesOnly = !showingFavoritesOnly;
+    
+    if (showingFavoritesOnly) {
+        button.innerHTML = '<i class="fas fa-heart me-2"></i>Show All Recipes';
+        button.className = 'btn btn-success w-100';
+    } else {
+        button.innerHTML = '<i class="fas fa-heart me-2"></i>Show Favorites Only';
+        button.className = 'btn btn-outline-success w-100';
+    }
+    
+    filterRecipes();
+}

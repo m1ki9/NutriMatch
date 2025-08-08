@@ -1,0 +1,123 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<style>
+    :root {
+        --bs-primary: #22c55e;
+        --bs-primary-rgb: 34, 197, 94;
+    }
+    
+    .btn-primary {
+        background-color: #22c55e;
+        border-color: #22c55e;
+    }
+    
+    .btn-primary:hover {
+        background-color: #16a34a;
+        border-color: #16a34a;
+    }
+    
+    .btn-primary:focus, .btn-primary.focus {
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.5);
+    }
+    
+    .btn-primary:active, .btn-primary.active {
+        background-color: #15803d !important;
+        border-color: #15803d !important;
+    }
+    
+    .btn-outline-primary {
+        color: #22c55e;
+        border-color: #22c55e;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #22c55e;
+        border-color: #22c55e;
+        color: white;
+    }
+    
+    .btn-outline-primary:focus, .btn-outline-primary.focus {
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.5);
+    }
+    
+    .btn-outline-primary:active, .btn-outline-primary.active {
+        background-color: #15803d !important;
+        border-color: #15803d !important;
+        color: white !important;
+    }
+    
+    .form-control:focus {
+        border-color: #86efac;
+        box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+    }
+    
+    h1 {
+        color: #22c55e;
+        font-weight: 600;
+    }
+    
+    .login-section {
+        background-color: #f0fdf4;
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .login-section h3 {
+        color: #16a34a;
+        margin-bottom: 20px;
+    }
+
+    #registerForm {
+        margin-top: 5rem;
+    }
+</style>
+
+<div class="row mt-5 mb-5 flex justify-content-center al">
+    <div class="col-md-4">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Create a new account.</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email">Email</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Username" class="form-control" autocomplete="username" aria-required="true" placeholder="username" />
+                <label asp-for="Input.Username">Username</label>
+                <span asp-validation-for="Input.Username" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password">Password</label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+    <div class="d-flex align-items-center col-md-6 col-md-offset-2">
+        <section class="login-section">
+            <h3>Already have an account?</h3>
+            <p class="mb-3">Sign in to access your existing account.</p>
+            <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-primary btn-lg">Sign In</a>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
