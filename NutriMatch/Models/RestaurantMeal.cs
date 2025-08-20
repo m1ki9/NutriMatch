@@ -18,6 +18,8 @@ namespace NutriMatch.Models
         public String ItemName { get; set; }
 
         public String ItemDescription { get; set; }
+
+        public List<String> Type { get; set; } = new List<String>(){""};
         
         public float Calories { get; set; }
         public float Protein { get; set; }

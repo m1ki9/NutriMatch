@@ -19,6 +19,7 @@
         <div class="form-card">
             <div class="form-content">
                 <form asp-action="Create" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
                     <div class="form-group">
                         <label for="Title" class="label">Recipe Title</label>
                         <input type="text" 
@@ -34,9 +35,9 @@
                         <div class="search-container">
                             <div class="flex-row">
                                 <input type="text" 
-                                       class="input flex-2" 
-                                       placeholder="Search ingredients..." 
-                                       id="ingredientSearch">
+                                    class="input flex-2" 
+                                    placeholder="Search ingredients..." 
+                                    id="ingredientSearch">
                                 <select class="input flex-1" id="ingredientUnit">
                                     <option value="">Unit</option>
                                     <option value="g">Grams</option>
@@ -47,14 +48,17 @@
                                     <option value="cup">Cup</option>
                                 </select>
                                 <input type="number" 
-                                       class="input flex-1" 
-                                       placeholder="Amount" 
-                                       id="ingredientQuantity" 
-                                       step="0.01" 
-                                       min="0">
+                                    class="input flex-1" 
+                                    placeholder="Amount" 
+                                    id="ingredientQuantity" 
+                                    step="0.01" 
+                                    min="0">
                                 <button type="button" class="btn btn-primary" id="addIngredientButton">
                                     Add
                                 </button>
+                                <button type="button" class="btn btn-secondary add-new-ingredient-btn" id="addNewIngredientBtn" style="display: none;">
+                                        + Create New Ingredient
+                                 </button>
                             </div>
                             <div class="dropdown" id="ingredientDropdown"></div>
                         </div>
@@ -79,7 +83,7 @@
                         <input type="hidden" id="selectedInstructions" name="Instructions" />
                     </div>
                     <div class="form-group">
-                    <label class="form-label">Recipe Photo</label>
+                        <label class="form-label">Recipe Photo</label>
                         <div class="file-upload-area" id="fileUploadArea">
                             <div class="file-upload-icon">📷</div>
                             <p><strong>Click to upload</strong> or drag and drop</p>
@@ -100,6 +104,7 @@
             ← Back to Recipes
         </a>
     </div>
+    <partial name="_AddIngredientModal" />
+    <script src="~/js/RecipeCreate.js"></script>
 </body>
 </html>
-<script src="~/js/RecipeCreate.js"></script>

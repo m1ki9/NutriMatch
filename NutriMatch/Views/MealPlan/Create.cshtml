@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Meal Plan</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #c3d5c4;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2c5530;
+        }
+        .header-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .header-section p {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin: 0;
+        }
+        .main-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c5530;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .section-title i {
+            color: #4ade80;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .form-label i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+        .form-control {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        .form-control:focus {
+            border-color: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+        }
+        .macro-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .macro-item {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+        .macro-item:hover {
+            border-color: #4ade80;
+            background: #f0fdf4;
+        }
+        .macro-item .form-control {
+            border: 1px solid #d1d5db;
+            margin-top: 8px;
+        }
+        .help-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        .submit-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+        }
+        .btn-create {
+            background: #4ade80;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+        }
+        .btn-create:hover {
+            background: #22c55e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
+            color: white;
+        }
+        .btn-create:disabled {
+            background: #9ca3af;
+            transform: none;
+            box-shadow: none;
+        }
+        .success-message {
+            background: #d1f2d9;
+            color: #0d5016;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid #7dd87f;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+        }
+        .success-message i {
+            margin-right: 12px;
+            color: #16a34a;
+        }
+        .error-message {
+            background: #fed7d7;
+            color: #9b2c2c;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid #feb2b2;
+            margin-bottom: 24px;
+        }
+        .error-message i {
+            margin-right: 12px;
+        }
+        .error-message ul {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+        }
+        .icon-fire { color: #ef4444; }
+        .icon-protein { color: #8b5cf6; }
+        .icon-carbs { color: #f59e0b; }
+        .icon-fat { color: #06b6d4; }
+        .icon-restaurant { color: #ec4899; }
+        @@media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            .main-card {
+                padding: 24px;
+                border-radius: 20px;
+            }
+            .macro-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .header-section h1 {
+                font-size: 2rem;
+            }
+        }
+        .modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 0;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+.close {
+    font-size: 24px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.close:hover {
+    color: #333;
+}
+.modal-body {
+    padding: 1.5rem;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    transition: background-color 0.2s;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+.add-ingredient-option {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    color: #007bff;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+.add-ingredient-option:hover {
+    background-color: #f8f9fa;
+}
+.add-ingredient-option:last-child {
+    border-bottom: none;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>Create Meal Plan</h1>
+            <p>Generate your personalized weekly meal plan tailored to your nutrition goals</p>
+        </div>
+        <div class="main-card">
+            @if (TempData["Success"] != null)
+            {
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    @TempData["Success"]
+                </div>
+            }
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Please correct the following errors:</strong>
+                    <ul class="mb-0">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+            <form asp-action="Create" method="post" id="mealPlanForm">
+                @Html.AntiForgeryToken()
+                <div class="section-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Daily Macro Requirements
+                </div>
+                <div class="macro-grid">
+                    <div class="macro-item">
+                        <label for="DailyCalories" class="form-label">
+                            <i class="fas fa-fire icon-fire"></i>
+                            Daily Calories
+                        </label>
+                        <input type="number" class="form-control" id="DailyCalories" name="DailyCalories"
+                               min="1200" max="5000" value="@(Model?.DailyCalories ?? 2000)" required>
+                        <div class="help-text">1200 - 5000 calories</div>
+                    </div>
+                    <div class="macro-item">
+                        <label for="DailyProtein" class="form-label">
+                            <i class="fas fa-drumstick-bite icon-protein"></i>
+                            Daily Protein (g)
+                        </label>
+                        <input type="number" class="form-control" id="DailyProtein" name="DailyProtein"
+                               min="50" max="300" value="@(Model?.DailyProtein ?? 150)" required>
+                        <div class="help-text">50 - 300 grams</div>
+                    </div>
+                    <div class="macro-item">
+                        <label for="DailyCarbs" class="form-label">
+                            <i class="fas fa-bread-slice icon-carbs"></i>
+                            Daily Carbs (g)
+                        </label>
+                        <input type="number" class="form-control" id="DailyCarbs" name="DailyCarbs"
+                               min="100" max="600" value="@(Model?.DailyCarbs ?? 200)" required>
+                        <div class="help-text">100 - 600 grams</div>
+                    </div>
+                    <div class="macro-item">
+                        <label for="DailyFat" class="form-label">
+                            <i class="fas fa-cheese icon-fat"></i>
+                            Daily Fat (g)
+                        </label>
+                        <input type="number" class="form-control" id="DailyFat" name="DailyFat"
+                               min="30" max="200" value="@(Model?.DailyFat ?? 78)" required>
+                        <div class="help-text">30 - 200 grams</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="RestaurantMealsPerWeek" class="form-label">
+                        <i class="fas fa-utensils icon-restaurant"></i>
+                        Restaurant Meals Per Week
+                    </label>
+                    <input type="number" class="form-control" id="RestaurantMealsPerWeek" name="RestaurantMealsPerWeek"
+                           min="0" max="21" value="@(Model?.RestaurantMealsPerWeek ?? 3)" required>
+                    <div class="help-text">0 - 21 meals per week</div>
+                </div>
+                <div class="submit-section">
+                    <button type="submit" class="btn btn-create">
+                        <span class="btn-text">
+                            <i class="fas fa-sparkles me-2"></i>
+                            Generate Meal Plan
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('DailyCalories').addEventListener('input', function() {
+            const calories = parseFloat(this.value);
+            if (calories && calories >= 1200) {
+                const proteinCals = calories * 0.30;
+                const carbCals = calories * 0.40;
+                const fatCals = calories * 0.30;
+                document.getElementById('DailyProtein').value = Math.round(proteinCals / 4);
+                document.getElementById('DailyCarbs').value = Math.round(carbCals / 4);
+                document.getElementById('DailyFat').value = Math.round(fatCals / 9);
+            }
+        });
+        document.getElementById('mealPlanForm').addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const btnText = submitBtn.querySelector('.btn-text');
+            btnText.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

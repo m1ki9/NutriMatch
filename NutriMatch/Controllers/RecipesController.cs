@@ -16,8 +16,182 @@ using System.Security.Claims;
 using Microsoft.AspNet.Identity;
 namespace NutriMatch.Controllers
 {
+    public class MealKeywords
+    {
+        public List<string> Breakfast { get; set; }
+        public List<string> Main { get; set; }
+        public List<string> Snack { get; set; }
+    }
     public class RecipesController : Controller
     {
+        private MealKeywords LoadKeywordsFromJson()
+        {
+            var filePath = "Data/meal_keywords.json";
+            if (!System.IO.File.Exists(filePath))
+            {
+                return new MealKeywords
+                {
+                    Breakfast = new List<string>(),
+                    Main = new List<string>(),
+                    Snack = new List<string>()
+                };
+            }
+            var jsonString = System.IO.File.ReadAllText(filePath);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            return JsonSerializer.Deserialize<MealKeywords>(jsonString, options) ?? new MealKeywords
+            {
+                Breakfast = new List<string>(),
+                Main = new List<string>(),
+                Snack = new List<string>()
+            };
+        }
+        public List<string> GenerateRecipeTags(Recipe recipe, List<SelectedIngredient> ingredients)
+        {
+            var keywords = LoadKeywordsFromJson();
+            var tags = new HashSet<string>();
+            string NormalizeWord(string word)
+            {
+                word = word.ToLower().Trim();
+                if (word.EndsWith("ies") && word.Length > 4)
+                    return word.Substring(0, word.Length - 3) + "y";
+                if (word.EndsWith("es") && word.Length > 3)
+                    return word.Substring(0, word.Length - 2);
+                if (word.EndsWith("s") && word.Length > 3 && !word.EndsWith("ss"))
+                    return word.Substring(0, word.Length - 1);
+                return word;
+            }
+            int CountKeywordMatches(IEnumerable<string> words, HashSet<string> keywords, bool isTitle = false)
+            {
+                int count = 0;
+                foreach (var word in words)
+                {
+                    bool matches = keywords.Contains(word) || keywords.Contains(NormalizeWord(word));
+                    if (matches)
+                        count += isTitle ? 3 : 1;
+                }
+                return count;
+            }
+            bool ContainsKeyword(IEnumerable<string> words, HashSet<string> keywords)
+            {
+                return words.Any(word =>
+                    keywords.Contains(word) ||
+                    keywords.Contains(NormalizeWord(word)) ||
+                    keywords.Any(k => NormalizeWord(k) == NormalizeWord(word))
+                );
+            }
+            var breakfastKeywords = new HashSet<string>(keywords.Breakfast ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            var mainKeywords = new HashSet<string>(keywords.Main ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            var snackKeywords = new HashSet<string>(keywords.Snack ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            var titleWords = recipe.Title.ToLower()
+                .Split(new char[] { ' ', '-', '_', ',', '.', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+            var ingredientWords = new HashSet<string>();
+            foreach (var ing in ingredients)
+            {
+                var words = ing.Name.ToLower()
+                    .Split(new char[] { ' ', '-', '_', ',', '.', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var w in words) ingredientWords.Add(w);
+            }
+            var allWords = titleWords.Concat(ingredientWords).ToList();
+            int breakfastScore = CountKeywordMatches(titleWords, breakfastKeywords, true) +
+                                 CountKeywordMatches(ingredientWords, breakfastKeywords, false);
+            int mainScore = CountKeywordMatches(titleWords, mainKeywords, true) +
+                            CountKeywordMatches(ingredientWords, mainKeywords, false);
+            int snackScore = CountKeywordMatches(titleWords, snackKeywords, true) +
+                             CountKeywordMatches(ingredientWords, snackKeywords, false);
+            int lunchScore = mainScore;
+            int dinnerScore = mainScore;
+            float calories = Math.Max(recipe.Calories, 1);
+            float proteinRatio = (recipe.Protein * 4) / calories * 100;
+            float carbRatio = (recipe.Carbs * 4) / calories * 100;
+            float fatRatio = (recipe.Fat * 9) / calories * 100;
+            if (calories < 150)
+            {
+                snackScore += 5;
+                breakfastScore -= 2;
+                lunchScore -= 3;
+                dinnerScore -= 4;
+            }
+            else if (calories < 300)
+            {
+                snackScore += 3;
+                breakfastScore += 2;
+                lunchScore -= 1;
+                dinnerScore -= 2;
+            }
+            else if (calories < 450)
+            {
+                breakfastScore += 3;
+                lunchScore += 2;
+                snackScore -= 1;
+                dinnerScore -= 1;
+            }
+            else if (calories < 650)
+            {
+                lunchScore += 3;
+                dinnerScore += 2;
+                breakfastScore -= 1;
+                snackScore -= 3;
+            }
+            else
+            {
+                dinnerScore += 4;
+                lunchScore += 1;
+                breakfastScore -= 3;
+                snackScore -= 4;
+            }
+            if (proteinRatio > 30)
+            {
+                dinnerScore += 3;
+                lunchScore += 2;
+                breakfastScore += 1;
+                snackScore -= 1;
+            }
+            else if (proteinRatio > 20)
+            {
+                dinnerScore += 2;
+                lunchScore += 1;
+            }
+            else if (proteinRatio < 10)
+            {
+                snackScore += 2;
+                dinnerScore -= 1;
+                lunchScore -= 1;
+            }
+            if (carbRatio > 60)
+            {
+                breakfastScore += 2;
+                snackScore += 2;
+                dinnerScore -= 1;
+            }
+            else if (carbRatio < 20)
+            {
+                dinnerScore += 1;
+                lunchScore += 1;
+            }
+            if (fatRatio > 40)
+            {
+                dinnerScore += 2;
+                snackScore += 1;
+                breakfastScore -= 1;
+            }
+            var results = new List<(string tag, int score)>
+        {
+            ("breakfast", breakfastScore),
+            ("lunch", lunchScore),
+            ("dinner", dinnerScore),
+            ("snack", snackScore)
+        }.OrderByDescending(x => x.score).ToList();
+            tags.Add(results[0].tag);
+            for (int i = 1; i < results.Count; i++)
+            {
+                if (results[i].score > 0 && results[i].score >= results[0].score * 0.6)
+                    tags.Add(results[i].tag);
+            }
+            return tags.ToList();
+        }
         float ConvertType(float number, string unit)
         {
             float result;
@@ -55,6 +229,7 @@ namespace NutriMatch.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var recipes = await _context.Recipes
+                .Where(r => r.RecipeStatus == "Accepted")
                 .Include(r => r.User)
                 .Include(r => r.Ratings)
                 .ToListAsync();
@@ -74,8 +249,8 @@ namespace NutriMatch.Controllers
             ViewBag.userId = userId;
             return View(recipes);
         }
-        [Route("Recipes/Details/{id}/{isOwner?}")]
-        public async Task<IActionResult> Details(int? id, bool isOwner = false)
+        [Route("Recipes/Details/{id}")]
+        public async Task<IActionResult> Details(int? id, bool isOwner = false, String recipeDetailsDisplayContorol = "")
         {
             if (id == null)
             {
@@ -84,28 +259,43 @@ namespace NutriMatch.Controllers
             var recipe = await _context.Recipes.Include(r => r.User)
             .Include(r => r.RecipeIngredients)
             .ThenInclude(ri => ri.Ingredient)
-            .FirstOrDefaultAsync(m => m.Id == id);      
+            .FirstOrDefaultAsync(m => m.Id == id);
             if (recipe == null)
             {
                 return NotFound();
             }
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            bool actualIsOwner = !string.IsNullOrEmpty(userId) && recipe.UserId == userId;
-            var (averageRating, totalRatings, userRating, hasUserRated) = 
-                await GetRatingDataAsync(id.Value, userId);
-            bool isFavorited = false;
-            if (!string.IsNullOrEmpty(userId))
+            if (recipeDetailsDisplayContorol == "Declined")
             {
-                isFavorited = await _context.FavoriteRecipes
-                    .AnyAsync(fr => fr.UserId == userId && fr.RecipeId == id.Value);
+                return PartialView("_RecipeDeclinePartial", recipe);
             }
-            ViewBag.IsOwner = actualIsOwner;
-            ViewBag.AverageRating = averageRating;
-            ViewBag.TotalRatings = totalRatings;
-            ViewBag.UserRating = userRating;
-            ViewBag.HasUserRated = hasUserRated;
-            ViewBag.IsFavorited = isFavorited;
-            return PartialView("_RecipeDetailsPartial", recipe);
+            else
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                bool actualIsOwner = !string.IsNullOrEmpty(userId) && recipe.UserId == userId;
+                var (averageRating, totalRatings, userRating, hasUserRated) =
+                    await GetRatingDataAsync(id.Value, userId);
+                bool isFavorited = false;
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    isFavorited = await _context.FavoriteRecipes
+                        .AnyAsync(fr => fr.UserId == userId && fr.RecipeId == id.Value);
+                }
+                if (recipeDetailsDisplayContorol == "Buttons")
+                {
+                    ViewBag.AddAdminButtons = true;
+                }
+                else if (recipeDetailsDisplayContorol == "Index")
+                {
+                    ViewBag.InIndex = true;
+                }
+                    ViewBag.IsOwner = actualIsOwner;
+                ViewBag.AverageRating = averageRating;
+                ViewBag.TotalRatings = totalRatings;
+                ViewBag.UserRating = userRating;
+                ViewBag.HasUserRated = hasUserRated;
+                ViewBag.IsFavorited = isFavorited;
+                return PartialView("_RecipeDetailsPartial", recipe);
+            }
         }
         [Authorize]
         public IActionResult Create()
@@ -135,6 +325,7 @@ namespace NutriMatch.Controllers
                     Console.WriteLine("No file uploaded or file is empty.");
                 }
                 recipe.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                recipe.Type = new List<string> { " " };
                 _context.Add(recipe);
                 await _context.SaveChangesAsync();
                 string selectedIngredients = Request.Form["Ingredients"];
@@ -143,6 +334,7 @@ namespace NutriMatch.Controllers
                 float totalProtein = 0;
                 float totalCarbs = 0;
                 float totalFat = 0;
+                bool hasPendingIngredients = false;
                 foreach (var i in ingredients)
                 {
                     _context.RecipeIngredients.Add(new RecipeIngredient
@@ -157,11 +349,19 @@ namespace NutriMatch.Controllers
                     totalProtein += ConvertType(tempIngredient.Protein, i.Unit) * i.Quantity;
                     totalCarbs += ConvertType(tempIngredient.Carbs, i.Unit) * i.Quantity;
                     totalFat += ConvertType(tempIngredient.Fat, i.Unit) * i.Quantity;
+                    if (tempIngredient.Status == "Pending")
+                    {
+                        hasPendingIngredients = true;
+                    }
                 }
                 recipe.Calories = MathF.Round(totalCalories, MidpointRounding.AwayFromZero);
                 recipe.Protein = MathF.Round(totalProtein, MidpointRounding.AwayFromZero);
                 recipe.Carbs = MathF.Round(totalCarbs, MidpointRounding.AwayFromZero);
                 recipe.Fat = MathF.Round(totalFat, MidpointRounding.AwayFromZero);
+                if (hasPendingIngredients){
+                    recipe.HasPendingIngredients = true;
+                }
+                recipe.Type = GenerateRecipeTags(recipe, ingredients);
                 _context.Update(recipe);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -180,8 +380,17 @@ namespace NutriMatch.Controllers
             }
             return View(recipe);
         }
-        public async Task<IActionResult> Edit(int? id)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id, bool requiresChange = false)
         {
+            if (requiresChange)
+            {
+                ViewBag.RequireChange = true;
+            }
+            else
+            {
+                ViewBag.RequireChange = false;
+            }
             if (id == null)
             {
                 return NotFound();
@@ -253,6 +462,7 @@ namespace NutriMatch.Controllers
                 recipe.Carbs = MathF.Round(totalCarbs, MidpointRounding.AwayFromZero);
                 recipe.Fat = MathF.Round(totalFat, MidpointRounding.AwayFromZero);
                 recipe.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                recipe.Type = GenerateRecipeTags(recipe, ingredients);
                 _context.Update(recipe);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(MyRecipes));
@@ -304,7 +514,7 @@ namespace NutriMatch.Controllers
         public async Task<ActionResult<List<Ingredient>>> getSuggestions([FromQuery] String query)
         {
             List<Ingredient> suggestions = await _context.Ingredients
-            .Where(i => EF.Functions.ILike(i.Name, $"%{query}%"))
+            .Where(i => EF.Functions.ILike(i.Name, $"%{query}%") && i.Status == null)
             .OrderBy(i => i.Name)
             .Take(5)
             .ToListAsync();
@@ -312,11 +522,11 @@ namespace NutriMatch.Controllers
         }
         public ActionResult MyRecipes()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userRecipes = _context.Recipes.Where(r => r.UserId == userId).Include(r => r.User).Include(r => r.Ratings).ToList();
             var recipeIds = userRecipes.Select(r => r.Id).ToList();
             var ratings = _context.RecipeRatings.Where(r => recipeIds.Contains(r.RecipeId)).GroupBy(r => r.RecipeId);
-             foreach (var recipe in userRecipes)
+            foreach (var recipe in userRecipes)
             {
                 recipe.Rating = recipe.Ratings.Any() ? recipe.Ratings.Average(r => r.Rating) : 0;
             }
@@ -324,8 +534,15 @@ namespace NutriMatch.Controllers
             foreach (var groop in ratings)
             {
                 averageRating += groop.Average(r => r.Rating);
-            }    
-            ViewBag.AverageRating = Math.Round(averageRating / ratings.Count(), 1);
+            }
+            if (ratings.Count() > 0)
+            {
+                ViewBag.AverageRating = Math.Round(averageRating / ratings.Count(), 1);
+            }
+            else
+            {
+                ViewBag.AverageRating = 0;
+            }
             return View(userRecipes);
         }
         [HttpPost]
@@ -376,9 +593,9 @@ namespace NutriMatch.Controllers
                     .ToListAsync();
                 var averageRating = ratings.Any() ? Math.Round(ratings.Average(), 1) : 0;
                 var totalRatings = ratings.Count;
-                return Json(new 
-                { 
-                    success = true, 
+                return Json(new
+                {
+                    success = true,
                     averageRating = averageRating,
                     totalRatings = totalRatings,
                     message = "Rating submitted successfully"
@@ -429,7 +646,7 @@ namespace NutriMatch.Controllers
                 return Json(new { success = false, message = "An error occurred while removing your rating" });
             }
         }
-        private async Task<(double averageRating, int totalRatings, double userRating, bool hasUserRated)> 
+        private async Task<(double averageRating, int totalRatings, double userRating, bool hasUserRated)>
             GetRatingDataAsync(int recipeId, string userId = null)
         {
             var ratings = await _context.RecipeRatings
@@ -487,19 +704,76 @@ namespace NutriMatch.Controllers
                     isFavorited = true;
                 }
                 await _context.SaveChangesAsync();
-                return Json(new { 
-                    success = true, 
+                return Json(new
+                {
+                    success = true,
                     isFavorited = isFavorited,
                     message = isFavorited ? "Added to favorites" : "Removed from favorites"
                 });
             }
+            catch (Exception _)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "An error occurred while updating favorites"
+                });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddIngredient([FromBody] JsonElement request)
+        {
+            String Name = request.GetProperty("Name").GetString();
+            float Calories = request.GetProperty("Calories").GetSingle();
+            float Protein = request.GetProperty("Protein").GetSingle();
+            float Carbs = request.GetProperty("Carbs").GetSingle();
+            float Fat = request.GetProperty("Fat").GetSingle();
+            var token = Request.Headers["RequestVerificationToken"].FirstOrDefault();
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest("Anti-forgery token missing.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                return BadRequest("Ingredient name is required.");
+            }
+            try
+            {
+                var existingIngredient = await _context.Ingredients
+                    .FirstOrDefaultAsync(i => i.Name.ToLower() == Name.ToLower());
+                if (existingIngredient != null)
+                {
+                    return BadRequest("An ingredient with this name already exists.");
+                }
+                var ingredient = new Ingredient
+                {
+                    Name = Name.Trim(),
+                    Calories = Calories,
+                    Protein = Protein,
+                    Carbs = Carbs,
+                    Fat = Fat,
+                    Status = "Pending"
+                };
+                _context.Ingredients.Add(ingredient);
+                await _context.SaveChangesAsync();
+                return Json(new
+                {
+                    id = ingredient.Id,
+                    name = ingredient.Name,
+                    calories = ingredient.Calories,
+                    protein = ingredient.Protein,
+                    carbs = ingredient.Carbs,
+                    fat = ingredient.Fat,
+                    sucess = true
+                });
+            }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error toggling favorite for recipe", ex);
-                return Json(new { 
-                    success = false, 
-                    message = "An error occurred while updating favorites" 
-                });
+                return StatusCode(500, "An error occurred while adding the ingredient.");
             }
         }
     }

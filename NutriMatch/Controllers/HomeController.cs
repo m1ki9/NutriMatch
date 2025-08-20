@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NutriMatch.Data;
 using NutriMatch.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace MyApp.Namespace
 {
@@ -9,28 +11,63 @@ namespace MyApp.Namespace
     {
 
         private readonly AppDbContext _context;
-        public Home(AppDbContext context)
+        private readonly UserManager<User> _userManager;
+        public Home(AppDbContext context,UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
-        {   
-            var recipes = await _context.Recipes.Include(r => r.User).Include(r => r.Ratings).Take(6).ToListAsync();
-            foreach (var recipe in recipes)
-            {
-                recipe.Rating = recipe.Ratings.Any() ? recipe.Ratings.Average(r => r.Rating) : 0;
-            }
-            var model = new HomeViewModel
-            {
+{   
+    var recipes = await _context.Recipes.Where(r => r.RecipeStatus == "Accepted").Include(r => r.User).Include(r => r.Ratings).Take(6).ToListAsync();
+    foreach (var recipe in recipes)
+    {
+        recipe.Rating = recipe.Ratings.Any() ? recipe.Ratings.Average(r => r.Rating) : 0;
+    }
+    var model = new HomeViewModel
+    {
+        Recipes = recipes,
+        Restaurants = await _context.Restaurants.ToListAsync()                
+    };
 
-               
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+    var userRecipes = _context.Recipes.Where(r => r.UserId == userId).Include(r => r.User).Include(r => r.Ratings).ToList();
+    var recipeIds = userRecipes.Select(r => r.Id).ToList();
+    var ratings = _context.RecipeRatings.Where(r => recipeIds.Contains(r.RecipeId)).GroupBy(r => r.RecipeId);
 
-                Recipes = recipes,
-                Restaurants = await _context.Restaurants.ToListAsync()                
-            };
-            return View(model);
-        }
+    foreach (var recipe in userRecipes)
+    {
+        recipe.Rating = recipe.Ratings.Any() ? recipe.Ratings.Average(r => r.Rating) : 0;
+    }
+
+    double averageRating = 0;
+    foreach (var groop in ratings)
+    {
+        averageRating += groop.Average(r => r.Rating);
+    }    
+
+    if (ratings.Count() > 0)
+    {
+        ViewBag.AverageRating = Math.Round(averageRating / ratings.Count(), 1);
+    }
+    else
+    {
+        ViewBag.AverageRating = 0; 
+    }
+
+    ViewBag.UserRecipesCount = userRecipes.Count;
+
+
+    if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(userId))
+    {
+ 
+        var currentUser = await _userManager.GetUserAsync(User);
+        ViewBag.UserPicture = currentUser?.ProfilePictureUrl; 
+    }
+
+    return View(model);
+}
 
 
     }

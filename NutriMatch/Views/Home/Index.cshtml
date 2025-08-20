@@ -60,6 +60,82 @@
             </div>
         </section>
     }
+    else{
+       <section class="welcome-back-section" style="margin-top: 100px; margin-bottom: 100px; position: relative;">
+    <div class="floating-elements">
+        <i class="fas fa-leaf floating-leaf" style="position: absolute; top: 15%; left: 8%; font-size: 1.5rem; color: rgba(76, 175, 80, 0.1); animation: float 8s ease-in-out infinite;"></i>
+        <i class="fas fa-seedling floating-leaf" style="position: absolute; top: 70%; right: 12%; font-size: 1.2rem; color: rgba(76, 175, 80, 0.08); animation: float 10s ease-in-out infinite; animation-delay: -3s;"></i>
+        <i class="fas fa-apple-alt floating-leaf" style="position: absolute; bottom: 20%; left: 15%; font-size: 1.3rem; color: rgba(76, 175, 80, 0.06); animation: float 12s ease-in-out infinite; animation-delay: -6s;"></i>
+    </div>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="welcome-content">
+                    <h1 class="welcome-title" style="color: #2c3e50; font-size: 2.8rem; font-weight: 700; margin-bottom: 16px; line-height: 1.2;">
+                        Welcome back, 
+                        <br>
+                        <span style="color: #4CAF50;">@User.Identity.Name</span>! 
+                        <span style="font-size: 2rem;">👋</span>
+                    </h1>
+                    <p class="welcome-subtitle" style="color: #64748b; font-size: 1.2rem; font-weight: 400; margin-bottom: 32px; max-width: 600px; line-height: 1.6;">
+                        Your personalized nutrition journey continues. Ready to discover delicious, macro-friendly recipes that align with your goals?
+                    </p>
+                    <div class="welcome-actions" style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                        <a href="/Recipes" class="btn btn-outline" style="background: transparent; color: #4CAF50; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: all 0.2s ease; border: 1px solid #4CAF50; display: inline-flex; align-items: center;">
+                            <i class="fas fa-search" style="margin-right: 8px; font-size: 0.9rem;"></i>
+                            Browse Recipes
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="user-summary-card" style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 0, 0, 0.05); position: relative;">
+                     <div class="user-avatar" style="width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; font-weight: 700; overflow: hidden; position: relative;">
+                        @if (!string.IsNullOrEmpty(ViewBag.UserPicture as string))
+                        {
+                            <img src="@ViewBag.UserPicture" 
+                                alt="@(ViewBag.UserName ?? User.Identity.Name)" 
+                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                        }
+                        else
+                        {
+                            <div style="background: linear-gradient(135deg, #4CAF50, #45a049); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                @if (!string.IsNullOrEmpty(User.Identity.Name))
+                                {
+                                    @User.Identity.Name.Substring(0, 1).ToUpper()
+                                }
+                                else
+                                {
+                                    <i class="fas fa-user"></i>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="text-center mb-24">
+                        <h3 style="color: #2c3e50; font-size: 1.3rem; font-weight: 600; margin-bottom: 4px;">@User.Identity.Name</h3>
+                    </div>
+                    <div class="stats-grid" style="display: flex; justify-content: center; gap: 3rem; text-align: center;">
+                        <div class="stat-item">
+                            <div style="color: #4CAF50; font-size: 1.6rem; font-weight: 700; margin-bottom: 4px;">@ViewBag.UserRecipesCount</div>
+                            <div style="color: #64748b; font-size: 0.8rem; font-weight: 500;">Recipes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div style="color: #ff9500; font-size: 1.6rem; font-weight: 700; margin-bottom: 4px;">@ViewBag.AverageRating</div>
+                            <div style="color: #64748b; font-size: 0.8rem; font-weight: 500;">Rating</div>
+                        </div>
+                    </div>
+                    <div class="quick-action" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(0, 0, 0, 0.06);">
+                        <a href="Recipes/MyRecipes" style="display: flex; align-items: center; justify-content: between; color: #4CAF50; text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: color 0.2s ease;">
+                            <span>View My Recipes</span>
+                            <i class="fas fa-arrow-right" style="margin-left: auto; font-size: 0.8rem;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    }
     <section class="share-recipe-section">
         <div class="container">
             <div class="row align-items-center">
@@ -111,7 +187,12 @@
                                     <span class="rating">
                                         <i class="fas fa-star"></i> @recipe.Rating
                                     </span>
-                                    <span><i class="fas fa-user"></i> @recipe.User.UserName</span>
+                                    <span>
+                                        <i class="fas fa-user"></i>
+                                        @(recipe.User.UserName.Length > 23 
+                                            ? recipe.User.UserName.Substring(0, 23) + "…" 
+                                            : recipe.User.UserName)
+                                    </span>
                                     <span><i class="fas fa-calendar"> </i> @recipe.CreatedAt.ToString("MMM dd, yyyy")</span>
                                 </div>
                                 <div class="calories-info">

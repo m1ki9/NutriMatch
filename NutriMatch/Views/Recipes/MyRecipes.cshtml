@@ -22,7 +22,6 @@
         min-height: 100vh;
     }
     .container {
-        max-width: 1200px;
         margin: 0 auto;
         padding: 40px 20px;
     }
@@ -119,7 +118,7 @@
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
+    position: relative !important;
     cursor: pointer;
     flex-shrink: 0;
     box-sizing: border-box;
@@ -177,6 +176,15 @@
 .favorite-btn.active i {
     color: #ef4444;
     font-weight: 900;
+}
+.badge {
+    position: absolute;
+    top: 5px;
+    right: 7px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 15;
 }
 .recipe-content {
     padding: 1.5rem !important;
@@ -327,15 +335,40 @@
         <div class="recipe-grid" id="recipeGrid">
             @foreach (var recipe in Model)
             {
-                <div class="recipe-card" onclick="showRecipeDetails(@recipe.Id,true)" data-calories="@recipe.Calories" data-protein="@recipe.Protein" data-carbs="@recipe.Carbs" data-fat="@recipe.Fat">
+                <div class="recipe-card" onclick="showRecipeDetails(@recipe.Id,true,'@recipe.RecipeStatus')" data-calories="@recipe.Calories" data-protein="@recipe.Protein" data-carbs="@recipe.Carbs" data-fat="@recipe.Fat">
                     <img src="@recipe.ImageUrl" alt="@recipe.Title" class="recipe-image">
+                    <div class="badge">
+                        @if(recipe.RecipeStatus == "Pending")
+                        {
+                            <span class="badge bg-warning">
+                                <i class="fas fa-clock me-1"></i>Pending
+                            </span>
+                        }
+                        else if (recipe.RecipeStatus == "Accepted")
+                        {
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Accepted
+                            </span>
+                        }
+                        else if (recipe.RecipeStatus == "Declined")
+                        {
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times me-1"></i>Declined
+                            </span>
+                        }
+                    </div>
                     <div class="recipe-content">
                         <h3 class="recipe-title">@recipe.Title</h3>
                         <div class="recipe-meta">
                             <span class="rating">
                                 <i class="fas fa-star"></i> @recipe.Rating
                             </span>
-                            <span><i class="fas fa-user"></i>@recipe.User.UserName</span>
+                            <span>
+                                <i class="fas fa-user"></i>
+                                @(recipe.User.UserName.Length > 23 
+                                    ? recipe.User.UserName.Substring(0, 23) + "…" 
+                                    : recipe.User.UserName)
+                            </span>
                         </div>
                         <div class="recipe-macros">
                             <div class="macro-item">
@@ -373,10 +406,14 @@
     <div id="modalWindow"></div>
     <div id="modalWindowDelete"></div>
 <script>
-    function showRecipeDetails(recipeId,isOwner) {
+    function showRecipeDetails(recipeId,isOwner,recipeStatus) {
     const clickedCard = event.currentTarget;
     clickedCard.classList.add('loading');
-    fetch(`/Recipes/Details/${recipeId}/${isOwner}`)
+    const params = new URLSearchParams({
+    isOwner: isOwner,
+    recipeDetailsDisplayContorol: recipeStatus
+});
+    fetch(`/Recipes/Details/${recipeId}?${params}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -386,6 +423,17 @@
         .then(html => {
             const modalContainer = document.getElementById('modalWindow');
             modalContainer.innerHTML = html;
+            const scripts = modalContainer.querySelectorAll("script");
+                scripts.forEach(script => {
+                    const newScript = document.createElement("script");
+                    if (script.src) {
+                        newScript.src = script.src;
+                    } else {
+                        newScript.textContent = script.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                    document.body.removeChild(newScript);
+                });
             const modalElement = modalContainer.querySelector('.modal');
             if (modalElement) {
                 const modal = new bootstrap.Modal(modalElement);

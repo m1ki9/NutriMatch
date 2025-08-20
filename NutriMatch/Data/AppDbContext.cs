@@ -22,6 +22,8 @@ namespace NutriMatch.Data
         public DbSet<FavoriteRecipe> FavoriteRecipes { get; set; }
 
         public DbSet<RecipeRating> RecipeRatings { get; set; }
+        public DbSet<WeeklyMealPlan> WeeklyMealPlans { get; set; }
+        public DbSet<MealSlot> MealSlots { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

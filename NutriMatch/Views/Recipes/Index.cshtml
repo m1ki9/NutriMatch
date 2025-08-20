@@ -107,7 +107,12 @@
                             <span class="rating">
                                 <i class="fas fa-star"></i> @recipe.Rating
                             </span>
-                            <span><i class="fas fa-user"></i>@recipe.User.UserName</span>
+                            <span>
+                                <i class="fas fa-user"></i>
+                                @(recipe.User.UserName.Length > 23 
+                                    ? recipe.User.UserName.Substring(0, 23) + "…" 
+                                    : recipe.User.UserName)
+                            </span>
                             <span><i class="fas fa-calendar"> </i> @recipe.CreatedAt.ToString("MMM dd, yyyy")</span>
                         </div>
                         <div class="recipe-macros">

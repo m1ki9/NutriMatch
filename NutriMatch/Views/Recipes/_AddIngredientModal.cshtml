@@ -1,0 +1,38 @@
+
+<div id="addIngredientModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add New Ingredient</h3>
+            <span class="close" id="closeModal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="addIngredientForm">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label for="newIngredientName" class="label">Ingredient Name</label>
+                    <input type="text" id="newIngredientName" name="Name" class="input" placeholder="Enter ingredient name..." required>
+                </div>
+                <div class="form-group">
+                    <label for="newIngredientCalories" class="label">Calories (per 100g)</label>
+                    <input type="number" id="newIngredientCalories" name="Calories" class="input" step="0.01" min="0" placeholder="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="newIngredientProtein" class="label">Protein (per 100g)</label>
+                    <input type="number" id="newIngredientProtein" name="Protein" class="input" step="0.01" min="0" placeholder="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="newIngredientCarbs" class="label">Carbohydrates (per 100g)</label>
+                    <input type="number" id="newIngredientCarbs" name="Carbs" class="input" step="0.01" min="0" placeholder="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="newIngredientFat" class="label">Fat (per 100g)</label>
+                    <input type="number" id="newIngredientFat" name="Fat" class="input" step="0.01" min="0" placeholder="0" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancelAddIngredient" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Ingredient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

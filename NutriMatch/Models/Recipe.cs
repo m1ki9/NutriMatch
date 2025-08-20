@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-
 namespace NutriMatch.Models
 {
     public class Recipe
@@ -30,15 +30,20 @@ namespace NutriMatch.Models
         [ValidateNever]
         public String ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
-        public bool IsApproved { get; set; } = false;
-
+        public String RecipeStatus { get; set; } = "Pending";
+        public String AdminComment { get; set; } = String.Empty;
+        public String DeclineReason { get; set; } = String.Empty;
+        public bool? HasPendingIngredients { get; set; }
         [ValidateNever]
         public String UserId { get; set; }
         [ValidateNever]
+        [JsonIgnore]
         public virtual User User { get; set; }
         [ValidateNever]
         public ICollection<FavoriteRecipe> FavoritedBy { get; set; }
         [ValidateNever]
         public ICollection<RecipeRating> Ratings { get; set; }
+        [ValidateNever]
+        public List<String> Type { get; set; }
     }
 }

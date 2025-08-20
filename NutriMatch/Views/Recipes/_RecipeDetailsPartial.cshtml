@@ -7,6 +7,8 @@
     double userRating = ViewBag.UserRating ?? 0.0;
     bool hasUserRated = ViewBag.HasUserRated ?? false;
     bool isFavorited = ViewBag.IsFavorited ?? false;
+    bool AddAdminButtons = ViewBag.AddAdminButtons ?? false;
+    bool InIndex = ViewBag.InIndex ?? false;
 }
 <div class="modal fade" id="recipeModal" tabindex="-1" aria-labelledby="recipeModalLabel" aria-hidden="true">
     @Html.AntiForgeryToken()
@@ -55,40 +57,56 @@
                             </div>
                         </div>
                         <div class="recipe-actions">
-                            @if(isOwner){
-                            <div class="d-flex gap-2">
-                                <button onclick="location.href='/Recipes/Edit/@Model.Id'" class="action-btn edit-btn" title="Edit Recipe">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button onclick="openDeleteModal('@Model.Id')" class="action-btn delete-btn" title="Delete Recipe">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                            } else {
-                                        <div class="rate-recipe">
-                                            <span class="rate-label">@(hasUserRated ? "Your rating:" : "Rate this recipe:")</span>
-                                            <div class="rating-input" id="userRatingStars">
-                                                @for (int i = 1; i <= 5; i++)
+                            @if(AddAdminButtons){
+                                    <div class="admin-actions">
+                                        <button onclick="approveRecipe(@Model.Id)" class="admin-btn approve-btn subtle" title="Approve Recipe">
+                                            <i></i>
+                                            <span>Approve</span>
+                                        </button>
+                                        <button onclick="declineRecipe(@Model.Id)" class="admin-btn decline-btn subtle" title="Decline Recipe">
+                                            <i></i>
+                                            <span>Decline</span>
+                                        </button>
+                                    </div>
+                            }
+                            else{
+                                @if(isOwner){
+                                    if(!InIndex){
+                                    <div class="d-flex gap-2">
+                                        <button onclick="location.href='/Recipes/Edit/@Model.Id'" class="action-btn edit-btn" title="Edit Recipe">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="openDeleteModal('@Model.Id')" class="action-btn delete-btn" title="Delete Recipe">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    }
+                                } else {
+                                            <div class="rate-recipe">
+                                                <span class="rate-label">@(hasUserRated ? "Your rating:" : "Rate this recipe:")</span>
+                                                <div class="rating-input" id="userRatingStars">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        <i class="@(i <= userRating ? "fas" : "far") fa-star rating-star" 
+                                                        data-rating="@i" 
+                                                        onclick="rateRecipe(@i, @Model.Id)"></i>
+                                                    }
+                                                </div>
+                                                @if (hasUserRated)
                                                 {
-                                                    <i class="@(i <= userRating ? "fas" : "far") fa-star rating-star" 
-                                                       data-rating="@i" 
-                                                       onclick="rateRecipe(@i, @Model.Id)"></i>
+                                                    <button class="remove-rating-btn" onclick="removeRating(@Model.Id)" title="Remove your rating">
+                                                        <i class="fas fa-times"></i> Remove
+                                                    </button>
                                                 }
                                             </div>
-                                            @if (hasUserRated)
-                                            {
-                                                <button class="remove-rating-btn" onclick="removeRating(@Model.Id)" title="Remove your rating">
-                                                    <i class="fas fa-times"></i> Remove
-                                                </button>
-                                            }
-                                        </div>
-                                        <div> 
-                                                <button class="action-btn favorite-btn-details @(isFavorited ? "favorited" : "")" 
-                                                        onclick="toggleFavorite(@Model.Id)" 
-                                                        title="@(isFavorited ? "Remove from Favorites" : "Add to Favorites")">
-                                                <i class="far fa-heart"></i>
-                                                </button>
-                                        </div>
+                                            <div> 
+                                                    <button class="action-btn favorite-btn-details @(isFavorited ? "favorited" : "")" 
+                                                            onclick="toggleFavorite(@Model.Id)" 
+                                                            title="@(isFavorited ? "Remove from Favorites" : "Add to Favorites")">
+                                                    <i class="far fa-heart"></i>
+                                                    </button>
+                                            </div>
+                                }
                             }
                         </div>
                     </div>
@@ -133,7 +151,7 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="ingredients-list">
+                       <div class="ingredients-list">
                             <h4 class="section-title">
                                 <i class="fas fa-list-ul"></i>
                                 Ingredients
@@ -142,9 +160,26 @@
                             {
                                 @for (int i = 0; i < Model.RecipeIngredients.Count; i++)
                                 {
-                                    <div class="ingredient-item">
-                                        <input type="checkbox" class="ingredient-checkbox" id="ingredient@(i + 1)"> 
-                                        <label for="ingredient@(i + 1)">@Model.RecipeIngredients[i].Ingredient.Name, @Model.RecipeIngredients[i].Quantity @Model.RecipeIngredients[i].Unit </label>
+                                    <div class="ingredient-item" style="display: flex; align-items: center; justify-content: space-between;">
+                                        <div style="display: flex; align-items: center; flex: 1;">
+                                            <input type="checkbox" class="ingredient-checkbox" id="ingredient@(i + 1)"> 
+                                            <label for="ingredient@(i + 1)" style="margin-left: 8px;">
+                                                @Model.RecipeIngredients[i].Ingredient.Name, @Model.RecipeIngredients[i].Quantity @Model.RecipeIngredients[i].Unit
+                                                @if (Model.RecipeIngredients[i].Ingredient.Status == "Pending")
+                                                {
+                                                    <span class="pending-badge" style="background-color: #ffc107; color: #212529; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px;">
+                                                        <i class="fas fa-clock"></i> Pending Review
+                                                    </span>
+                                                }
+                                            </label>
+                                        </div>
+                                        @if (Model.RecipeIngredients[i].Ingredient.Status == "Pending")
+                                        {
+                                            <button onclick="viewIngredientReview(@Model.RecipeIngredients[i].Ingredient.Id)" type="button" class="btn btn-sm btn-outline-primary view-ingredient-btn" 
+                                                    style="margin-left: 10px;">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        }
                                     </div>
                                 }
                             }
@@ -311,6 +346,212 @@
     }
     .rate-recipe {
         align-items: flex-start;
+    }
+}
+.admin-actions {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+}
+.admin-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 120px;
+}
+.approve-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.approve-btn:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+.approve-btn:active {
+    transform: translateY(0);
+}
+.decline-btn {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+.decline-btn:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+.decline-btn:active {
+    transform: translateY(0);
+}
+.admin-btn i {
+    font-size: 16px;
+}
+.admin-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+.admin-btn.loading {
+    position: relative;
+    color: transparent;
+}
+.admin-btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+@@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@@media (min-width: 768px) {
+    .admin-actions {
+        flex-direction: row;
+    }
+}
+.admin-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    justify-content: flex-start;
+    align-items: center;
+}
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 25px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.admin-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+.admin-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.admin-btn i {
+    font-size: 14px;
+    line-height: 1;
+}
+.admin-btn span {
+    line-height: 1;
+}
+.approve-btn {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+}
+.approve-btn:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+}
+.approve-btn:focus {
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+}
+.decline-btn {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    color: white;
+}
+.decline-btn:hover {
+    background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+}
+.decline-btn:focus {
+    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.3);
+}
+.admin-btn.subtle {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #e9ecef;
+}
+.admin-btn.subtle:hover {
+    background: #e9ecef;
+    color: #495057;
+    border-color: #dee2e6;
+}
+.approve-btn.subtle {
+    color: #28a745;
+    border-color: #28a745;
+}
+.approve-btn.subtle:hover {
+    background: #28a745;
+    color: white;
+}
+.decline-btn.subtle {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+.decline-btn.subtle:hover {
+    background: #dc3545;
+    color: white;
+}
+@@media (max-width: 768px) {
+    .admin-actions {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+    .admin-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 18px;
+    }
+}
+.admin-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+.admin-btn.loading {
+    position: relative;
+    color: transparent;
+}
+.admin-btn.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -8px;
+    margin-left: -8px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+@@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }
 </style>

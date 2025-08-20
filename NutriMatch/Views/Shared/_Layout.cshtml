@@ -12,6 +12,7 @@
 @{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString();
 }
 <body>
     <header>
@@ -39,8 +40,12 @@
                                 <a class="nav-link @(currentController == "Recipes" && currentAction == "MyRecipes" ? "active-glow" : "")" href="/Recipes/MyRecipes">My Recipes</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/Identity/Account/MyAccount">My Account</a>
-                            </li>  
+                                <a class="nav-link @(currentController == "MealPlan" && currentAction == "Index" ? "active-glow" : "") " href="/MealPlan">Meal Plans</a>
+                            </li>
+                             <a class="nav-link @(currentPage == "/Account/MyAccount" ? "active-glow" : "")"
+                                href="/Identity/Account/MyAccount">
+                                My Account
+                            </a>
                             @if (User.IsInRole("Admin")){
                                 <li class="nav-item">
                                 <a class="nav-link @(currentController == "Admin" && currentAction == "Index" ? "active-glow" : "")" href="/Admin">Admin Panel</a>

@@ -2,9 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using NutriMatch.Data;
 using NutriMatch.Models;
 using Microsoft.AspNetCore.Identity;
+using NutriMatch.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddScoped<IMealPlanService, MealPlanService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDefaultIdentity<User>(options =>
