@@ -110,12 +110,16 @@
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
-
-        <a href="/Recipes" class="back-link">
+        @if(!@ViewBag.RequireChange)
+        {
+           <a href="/Recipes" class="back-link">
             ← Back to Recipes
-        </a>
+            </a>
+        }
+        
     </div>
 </body>
 </html>
@@ -129,3 +133,27 @@
 </script>
 
 <script src="~/js/RecipeEdit.js"></script>
+
+<script>
+    const requireChange = @((ViewBag.RequireChange ?? false).ToString().ToLower());
+    
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!requireChange) return; 
+
+        const form = document.querySelector("form");
+        // const initialData = new FormData(form);
+        let changed = false;
+
+        form.addEventListener("input", () => {
+            changed = true;
+        });
+
+        form.addEventListener("submit", (e) => {
+            if (!changed) {
+                e.preventDefault();
+                alert("Please make a change before saving.");
+            }
+        });
+    });
+
+</script>

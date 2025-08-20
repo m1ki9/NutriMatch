@@ -18,5 +18,7 @@ namespace NutriMatch.Models
         public float Carbs { get; set; }
         public float Fat { get; set; }
 
+        public String? Status { get; set; }
+
     }
 }
