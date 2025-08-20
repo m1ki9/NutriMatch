@@ -154,9 +154,12 @@ function filterRecipes() {
         const recipeCarbs = parseInt(card.dataset.carbs) || 0;
         const recipeFats = parseInt(card.dataset.fat) || 0;
         
-        // Get favorite status from the favorite button
+        // Get favorite status from the favorite button with null check
         const favoriteButton = card.querySelector('.favorite-btn');
-        const isFavorited = favoriteButton.getAttribute('data-favorited') === 'true';
+        const isFavorited = favoriteButton ? favoriteButton.getAttribute('data-favorited') === 'true' : false;
+        
+        // // Check if current user is the owner of this recipe
+        // const isOwner = card.getAttribute('data-is-owner') === 'true';
         
         const matchesSearch = searchTerm === '' || title.includes(searchTerm);
         
@@ -166,8 +169,8 @@ function filterRecipes() {
             recipeCarbs >= carbs.min && recipeCarbs <= carbs.max &&
             recipeFats >= fats.min && recipeFats <= fats.max;
         
-        // Add favorites filter check
-        const matchesFavorites = !showingFavoritesOnly || isFavorited;
+        // Add favorites filter check - only show favorited recipes that you don't own
+        const matchesFavorites = !showingFavoritesOnly || (isFavorited );
         
         if (matchesSearch && matchesMacros && matchesFavorites) {
             card.style.display = 'block';

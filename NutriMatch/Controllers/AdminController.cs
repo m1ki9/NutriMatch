@@ -18,7 +18,7 @@ public class AdminController : Controller
     public async Task<IActionResult> Index()
     {
         var pendingRecipes = await _context.Recipes
-            .Where(r => r.IsApproved == false)
+            .Where(r => r.RecipeStatus == "Pending")
             .Include(r => r.User)
             .ToListAsync();
 
@@ -27,30 +27,38 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ApproveRecipe([FromBody] int recipeId)
+    public async Task<IActionResult> ApproveRecipe([FromBody] JsonElement request)
     {
+        int recipeId = request.GetProperty("recipeId").GetInt32();
         var recipe = await _context.Recipes.FindAsync(recipeId);
         if (recipe == null)
             return NotFound("Recipe not found.");
 
-        recipe.IsApproved = true;
+        recipe.RecipeStatus = "Accepted";
         await _context.SaveChangesAsync();
 
-        return Ok("Recipe approved successfully.");
+        return Json(new { message = "Selected recipe approved.", success = true }); ;
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeclineRecipe([FromBody] int recipeId)
+    public async Task<IActionResult> DeclineRecipe([FromBody] JsonElement request)
     {
+        int recipeId = request.GetProperty("recipeId").GetInt32();
+        string reason = request.TryGetProperty("reason", out var reasonProp) ? reasonProp.GetString() : "No reason provided.";
+        string notes = request.TryGetProperty("notes", out var notesProp) ? notesProp.GetString() : "No notes provided.";
+
         var recipe = await _context.Recipes.FindAsync(recipeId);
         if (recipe == null)
             return NotFound("Recipe not found.");
 
-        _context.Recipes.Remove(recipe);
+        recipe.RecipeStatus = "Declined";
+        recipe.DeclineReason = reason ?? string.Empty;
+        recipe.AdminComment = notes ?? string.Empty;
+        // _context.Recipes.Remove(recipe);
         await _context.SaveChangesAsync();
 
-        return Ok("Recipe declined successfully.");
+        return Json(new { message = "Selected recipe declined.", success = true }); ;
     }
 
     [HttpPost]
@@ -67,35 +75,29 @@ public class AdminController : Controller
 
         foreach (var recipe in recipes)
         {
-            recipe.IsApproved = true;
+            recipe.RecipeStatus = "Accepted";
             Console.WriteLine(recipe.Title + " approved");
         }
 
         await _context.SaveChangesAsync();
 
         return Json(new { message = "Selected recipes approved.", success = true }); ;
-        
+
     }
 
-
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> BulkDeclineRecipes([FromBody] List<int> recipeIds)
+    public async Task<IActionResult> DeclineReasonModel(int? id)
     {
-        var recipes = await _context.Recipes
-            .Where(r => recipeIds.Contains(r.Id))
-            .ToListAsync();
+        var recipe = await _context.Recipes.Include(r => r.User)
+           .Include(r => r.RecipeIngredients)
+           .ThenInclude(ri => ri.Ingredient)
+           .FirstOrDefaultAsync(m => m.Id == id);
 
-        foreach (var recipe in recipes)
-        {
-            _context.Recipes.Remove(recipe);
-        }
 
-        await _context.SaveChangesAsync();
-
-        return Ok("Selected recipes declined.");
+        return PartialView("_RecipeDeclineAdminPartial", recipe);
     }
+    
+
+
 
 
 

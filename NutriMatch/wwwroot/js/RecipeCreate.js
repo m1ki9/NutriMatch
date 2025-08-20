@@ -22,10 +22,20 @@ const fileUploadArea = document.getElementById('fileUploadArea');
 const fileInput = document.getElementById('RecipeImage');
 const imagePreview = document.getElementById('imagePreview');
 
+
+const addNewIngredientBtn = document.getElementById('addNewIngredientBtn');
+const addIngredientModal = document.getElementById('addIngredientModal');
+const addIngredientForm = document.getElementById('addIngredientForm');
+const closeModal = document.getElementById('closeModal');
+const cancelAddIngredient = document.getElementById('cancelAddIngredient');
+let lastSearchQuery = '';
+
+
 document.addEventListener('DOMContentLoaded', function() {
-    initializeSearchFunctionality();
+     initializeSearchFunctionality();
     initializeInstructionsFunctionality();
     initializeFileUpload();
+    initializeModalFunctionality();
 });
 
 function initializeFileUpload(){
@@ -87,20 +97,23 @@ function initializeSearchFunctionality() {
 
     if (ingredientSearch) {
         ingredientSearch.addEventListener('input', function() {
-            const query = this.value.trim();
-            currentFocus = -1;
-            selectedIngredient = null; 
-            
-            if (query === '') {
-                hideDropdown(ingredientDropdown);
-                return;
+        const query = this.value.trim();
+        currentFocus = -1;
+        selectedIngredient = null; 
+        
+        if (query === '') {
+            hideDropdown(ingredientDropdown);
+            if (addNewIngredientBtn) {
+                addNewIngredientBtn.style.display = 'none';
             }
+            return;
+        }
 
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                searchIngredients(query);
-            }, 300);
-        });
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchIngredients(query);
+        }, 300);
+    });
 
         ingredientSearch.addEventListener('keydown', function(e) {
             handleKeyNavigation(e, ingredientDropdown);
@@ -165,12 +178,24 @@ async function searchIngredients(query) {
 function displaySuggestions(suggestions, query) {
     if (!ingredientDropdown) return;
 
+    lastSearchQuery = query;
     ingredientDropdown.innerHTML = '';
     
     if (!suggestions || suggestions.length === 0) {
         ingredientDropdown.innerHTML = '<div class="no-results">No results found</div>';
         showDropdown(ingredientDropdown);
+        
+        // Show the button
+        if (addNewIngredientBtn) {
+            addNewIngredientBtn.style.display = 'block';
+            console.log('Showing button for query:', query); // Debug log
+        }
         return;
+    }
+
+    // Hide the button when there are results
+    if (addNewIngredientBtn) {
+        addNewIngredientBtn.style.display = 'none';
     }
 
     suggestions.forEach((suggestion, index) => {
@@ -178,15 +203,12 @@ function displaySuggestions(suggestions, query) {
         item.className = 'dropdown-item';
         item.setAttribute('data-index', index);
         
-        
         const name = suggestion.name;
         const id = suggestion.id;
-        
         
         const regex = new RegExp(`(${query})`, 'gi');
         const highlightedText = name.replace(regex, '<strong>$1</strong>');
         item.innerHTML = highlightedText;
-        
         
         item.addEventListener('click', function() {
             selectedIngredient = {
@@ -368,6 +390,9 @@ function hideDropdown(dropdownElement) {
     if (dropdownElement) {
         dropdownElement.style.display = 'none';
     }
+    if (addNewIngredientBtn) {
+        addNewIngredientBtn.style.display = 'none';
+    }
     currentFocus = -1;
 }
 
@@ -406,3 +431,277 @@ document.querySelector('form').addEventListener('submit', function(e) {
         return false;
     }
 });
+
+
+function initializeModalFunctionality() {
+    console.log('Initializing modal functionality');
+    
+    const addNewIngredientBtn = document.getElementById('addNewIngredientBtn');
+    const addIngredientModal = document.getElementById('addIngredientModal');
+    const addIngredientForm = document.getElementById('addIngredientForm');
+    const closeModal = document.getElementById('closeModal');
+    const cancelAddIngredient = document.getElementById('cancelAddIngredient');
+    
+    if (addNewIngredientBtn) {
+        console.log('Button found, adding event listener');
+        addNewIngredientBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Button clicked!');
+            showAddIngredientModal(lastSearchQuery);
+        });
+    } else {
+        console.log('Button not found!');
+    }
+    
+    if (closeModal) {
+        closeModal.addEventListener('click', hideAddIngredientModal);
+    }
+    
+    if (cancelAddIngredient) {
+        cancelAddIngredient.addEventListener('click', function(e) {
+            e.preventDefault();
+            hideAddIngredientModal();
+        });
+    }
+    
+    if (addIngredientModal) {
+        addIngredientModal.addEventListener('click', function(e) {
+            if (e.target === addIngredientModal) {
+                hideAddIngredientModal();
+            }
+        });
+        
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && addIngredientModal.style.display === 'flex') {
+                hideAddIngredientModal();
+            }
+        });
+    }
+    
+    if (addIngredientForm) {
+        addIngredientForm.addEventListener('submit', handleAddNewIngredient);
+    }
+}
+
+
+function showAddIngredientModal(ingredientName = '') {
+    console.log('showAddIngredientModal called with:', ingredientName);
+    const addIngredientModal = document.getElementById('addIngredientModal');
+    
+    if (addIngredientModal) {
+        const nameInput = document.getElementById('newIngredientName');
+        if (nameInput) {
+            nameInput.value = ingredientName;
+        }
+        
+        // Use flex display and add show class for animation
+        addIngredientModal.style.display = 'flex';
+        addIngredientModal.classList.add('show');
+        
+        // Focus on the first input
+        setTimeout(() => {
+            if (nameInput) {
+                nameInput.focus();
+                nameInput.select();
+            }
+        }, 100);
+        
+        hideDropdown(ingredientDropdown);
+        console.log('Modal should be visible now');
+    } else {
+        console.log('Modal element not found!');
+    }
+}
+
+function hideAddIngredientModal() {
+    const addIngredientModal = document.getElementById('addIngredientModal');
+    
+    if (addIngredientModal) {
+        addIngredientModal.classList.remove('show');
+        
+        // Hide after animation completes
+        setTimeout(() => {
+            addIngredientModal.style.display = 'none';
+        }, 300);
+        
+        const form = document.getElementById('addIngredientForm');
+        if (form) {
+            form.reset();
+            // Remove any loading states
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+            }
+        }
+    }
+}
+
+
+async function handleAddNewIngredient(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Add loading state
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
+    }
+    
+    // Get form data
+    
+    
+    // Basic validation
+    if (!document.getElementById('newIngredientName').value.trim()) {
+        alert('Please enter an ingredient name');
+        // Remove loading state
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+        }
+        return;
+    }
+    
+    try {
+        // Get anti-forgery token - try multiple selectors
+        let token = document.querySelector('input[name="__RequestVerificationToken"]');
+        if (!token) {
+            token = document.querySelector('input[name="RequestVerificationToken"]');
+        }
+        if (!token) {
+            token = form.querySelector('input[name="__RequestVerificationToken"]');
+        }
+        
+        const tokenValue = token ? token.value : '';
+        
+        const response = await fetch('/Recipes/AddIngredient', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'RequestVerificationToken': tokenValue
+            },
+            body: JSON.stringify({
+                Name: document.getElementById('newIngredientName').value.trim(),
+                Calories: parseFloat(document.getElementById('newIngredientCalories').value) || 0.0,
+                Protein: parseFloat(document.getElementById('newIngredientProtein').value) || 0.0,
+                Carbs: parseFloat(document.getElementById('newIngredientCarbs').value) || 0.0,
+                Fat: parseFloat(document.getElementById('newIngredientFat').value) || 0.0
+            })
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server response:', errorText);
+            throw new Error(errorText || `HTTP error! status: ${response.status}`);
+        }
+        
+        const newIngredient = await response.json();
+        
+        // Update the selected ingredient
+        selectedIngredient = {
+            id: newIngredient.id,
+            name: newIngredient.name
+        };
+        
+        // Update the search input
+        const ingredientSearch = document.getElementById('ingredientSearch');
+        if (ingredientSearch) {
+            ingredientSearch.value = newIngredient.name;
+        }
+        
+        hideAddIngredientModal();
+        
+        // Show success message
+        showSuccessMessage('Ingredient added successfully!');
+        
+        // Clear the search dropdown
+        hideDropdown(ingredientDropdown);
+        
+    } catch (error) {
+        console.error('Error adding ingredient:', error);
+        
+        // Show user-friendly error message
+        let errorMessage = 'Error adding ingredient. Please try again.';
+        if (error.message.includes('already exists')) {
+            errorMessage = 'An ingredient with this name already exists.';
+        } else if (error.message.includes('required')) {
+            errorMessage = 'Please fill in all required fields.';
+        } else if (error.message.includes('Anti-forgery')) {
+            errorMessage = 'Security validation failed. Please refresh the page and try again.';
+        }
+        
+        alert(errorMessage);
+    } finally {
+        // Remove loading state
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+        }
+    }
+}
+
+// Helper function to show success messages (if not already in your code)
+function showSuccessMessage(message) {
+    // Create a temporary success message element
+    const successMsg = document.createElement('div');
+    successMsg.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        z-index: 1001;
+        font-weight: 500;
+        animation: slideInRight 0.3s ease;
+    `;
+    successMsg.textContent = message;
+    
+    document.body.appendChild(successMsg);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        successMsg.style.animation = 'slideOutRight 0.3s ease forwards';
+        setTimeout(() => {
+            if (successMsg.parentNode) {
+                successMsg.parentNode.removeChild(successMsg);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Add animation styles if not already added
+if (!document.getElementById('success-message-styles')) {
+    const style = document.createElement('style');
+    style.id = 'success-message-styles';
+    style.textContent = `
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
