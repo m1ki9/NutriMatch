@@ -2,17 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using NutriMatch.Models;
 
 namespace NutriMatch.Areas.Identity.Pages.Account
@@ -108,20 +102,11 @@ namespace NutriMatch.Areas.Identity.Pages.Account
             var userT = await _userManager.GetUserAsync(User);
 
 
-            // Only validate the ProfileInput part of the model
-            // ModelState.ClearValidationState(nameof(PasswordInput));
-            // if (!TryValidateModel(ProfileInput, nameof(ProfileInput)))
-            // {
-            //     await LoadUserData(user);
-            //     return Page();
-            // }
 
             bool hasChanges = false;
 
-            // Update email if changed
             if (ProfileInput.Email != user.Email)
             {
-                // Check if email is already taken
                 var existingUser = await _userManager.FindByEmailAsync(ProfileInput.Email);
                 if (existingUser != null && existingUser.Id != user.Id)
                 {
@@ -130,17 +115,14 @@ namespace NutriMatch.Areas.Identity.Pages.Account
                     return Page();
                 }
 
-                // Update email directly on the user object
                 user.Email = ProfileInput.Email;
                 user.NormalizedEmail = _userManager.NormalizeEmail(ProfileInput.Email);
-                user.EmailConfirmed = false; // Reset email confirmation when email changes
+                user.EmailConfirmed = false;
                 hasChanges = true;
             }
 
-            // Update username if changed
             if (ProfileInput.UserName != user.UserName)
             {
-                // Check if username is already taken
                 var existingUser = await _userManager.FindByNameAsync(ProfileInput.UserName);
                 if (existingUser != null && existingUser.Id != user.Id)
                 {
@@ -154,7 +136,6 @@ namespace NutriMatch.Areas.Identity.Pages.Account
                 hasChanges = true;
             }
 
-            // Handle profile picture upload
             if (ProfileInput.ProfilePicture != null)
             {
                 var result = await SaveProfilePictureAsync(ProfileInput.ProfilePicture, user.Id);
@@ -167,7 +148,6 @@ namespace NutriMatch.Areas.Identity.Pages.Account
                 hasChanges = true;
             }
 
-            // Save changes to database
             if (hasChanges)
             {
                 var updateResult = await _userManager.UpdateAsync(user);
@@ -183,19 +163,18 @@ namespace NutriMatch.Areas.Identity.Pages.Account
 
                 await _signInManager.RefreshSignInAsync(user);
                 StatusMessage = "Your profile has been updated successfully.";
-                
-                // Log the change for debugging
-                _logger.LogInformation("User {UserId} updated profile. New Email: {Email}, New UserName: {UserName}", 
+
+                _logger.LogInformation("User {UserId} updated profile. New Email: {Email}, New UserName: {UserName}",
                     user.Id, user.Email, user.UserName);
 
-                    if (!updateResult.Succeeded)
+                if (!updateResult.Succeeded)
+                {
+                    foreach (var error in updateResult.Errors)
                     {
-                        foreach (var error in updateResult.Errors)
-                        {
-                            _logger.LogError("Update failed: {Error}", error.Description);
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
+                        _logger.LogError("Update failed: {Error}", error.Description);
+                        ModelState.AddModelError(string.Empty, error.Description);
                     }
+                }
 
             }
             else
@@ -204,7 +183,7 @@ namespace NutriMatch.Areas.Identity.Pages.Account
                 StatusMessage = "No changes were made to your profile.";
             }
 
-            
+
 
             return RedirectToPage();
         }
@@ -216,14 +195,6 @@ namespace NutriMatch.Areas.Identity.Pages.Account
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-
-            // Only validate the PasswordInput part of the model
-            // ModelState.ClearValidationState(nameof(ProfileInput));
-            // if (!TryValidateModel(PasswordInput, nameof(PasswordInput)))
-            // {
-            //     await LoadUserData(user);
-            //     return Page();
-            // }
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, PasswordInput.CurrentPassword, PasswordInput.NewPassword);
             if (!changePasswordResult.Succeeded)
@@ -241,7 +212,6 @@ namespace NutriMatch.Areas.Identity.Pages.Account
             _logger.LogInformation("User changed their password successfully.");
             StatusMessage = "Your password has been changed successfully.";
 
-            // Clear the password fields after successful change
             PasswordInput = new PasswordInputModel();
 
             return RedirectToPage();
@@ -262,9 +232,8 @@ namespace NutriMatch.Areas.Identity.Pages.Account
                 UserName = user.UserName
             };
 
-            // Set profile picture URL - use database value if exists, otherwise check file system
-            ProfilePictureUrl = !string.IsNullOrEmpty(user.ProfilePictureUrl) 
-                ? user.ProfilePictureUrl 
+            ProfilePictureUrl = !string.IsNullOrEmpty(user.ProfilePictureUrl)
+                ? user.ProfilePictureUrl
                 : GetProfilePictureUrl(user.Id);
         }
 
@@ -272,38 +241,32 @@ namespace NutriMatch.Areas.Identity.Pages.Account
         {
             try
             {
-                // Validate file
-                if (file.Length > 5 * 1024 * 1024) // 5MB limit
+                if (file.Length > 5 * 1024 * 1024)
                 {
                     return (false, "Profile picture must be smaller than 5MB.");
                 }
 
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
                 var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-                
+
                 if (!allowedExtensions.Contains(fileExtension))
                 {
                     return (false, "Please upload a valid image file (JPG, PNG, or GIF).");
                 }
 
-                // Create uploads directory if it doesn't exist
                 var uploadsDir = Path.Combine(_webHostEnvironment.WebRootPath, "images");
                 Directory.CreateDirectory(uploadsDir);
 
-                // Delete existing profile picture
                 await DeleteProfilePictureAsync(userId);
 
-                // Generate unique filename
                 var fileName = $"{userId}_{Guid.NewGuid()}{fileExtension}";
                 var filePath = Path.Combine(uploadsDir, fileName);
 
-                // Save file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 }
 
-                // Update user's ProfilePictureUrl in database
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user != null)
                 {
@@ -360,7 +323,6 @@ namespace NutriMatch.Areas.Identity.Pages.Account
                 _logger.LogError(ex, "Error getting profile picture URL for user {UserId}", userId);
             }
 
-            // Return placeholder for users without profile pictures
             return "https://via.placeholder.com/120x120/22c55e/ffffff?text=User";
         }
     }

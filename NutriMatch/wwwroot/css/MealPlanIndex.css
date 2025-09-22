@@ -1,0 +1,370 @@
+:root {
+    --primary-green: #2ECC71;
+    --dark-green: #27AE60;
+    --light-green: #58D68D;
+    --light-green-gray: #bbcabe;
+    --dark-gray: #2C3E50;
+    --light-gray: #ECF0F1;
+    --nutri-light-gray: #f3f4f6;
+    --nutri-green-dark: #22c55e;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--light-pink) 0%, white 50%, var(--light-green-gray) 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.header-section {
+    margin-top: 3rem;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #2c5530;
+}
+
+.header-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.header-section p {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.alert-message {
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.alert-message i {
+    margin-right: 12px;
+}
+
+.alert-success {
+    background: rgba(209, 250, 229, 0.9);
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.alert-error {
+    background: rgba(254, 226, 226, 0.9);
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.plan-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    height: 100%;
+}
+
+.plan-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.plan-card-header {
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    color: white;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.plan-card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.plan-card:hover .plan-card-header::before {
+    left: 100%;
+}
+
+.plan-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.plan-date {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.plan-card-body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.stat-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.stat-box:hover {
+    background: #f0fdf4;
+    border-color: #4ade80;
+}
+
+.stat-number {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #16a34a;
+    display: block;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+.meal-preview {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    flex: 1;
+}
+
+.meal-preview h6 {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meal-list {
+    font-size: 0.8rem;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.meal-list div {
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.view-plan-btn {
+    background: #4ade80;
+    color: white;
+    text-decoration: none;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.view-plan-btn:hover {
+    background: #22c55e;
+    color: white;
+    text-decoration: none;
+}
+
+.create-new-card {
+    background: rgba(255, 255, 255, 0.7);
+    border: 3px dashed #4ade80;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: #16a34a;
+}
+
+.create-new-card:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #22c55e;
+    color: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.create-new-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.create-new-content i {
+    font-size: 3.5rem;
+    margin-bottom: 16px;
+    display: block;
+    color: #4ade80;
+}
+
+.create-new-content h4 {
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+}
+
+.create-new-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #374151;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 24px;
+    color: #9ca3af;
+}
+
+.empty-state h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #2c5530;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    margin-bottom: 30px;
+    color: #6b7280;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-create-first {
+    background: rgba(255, 255, 255, 0.9);
+    color: #16a34a;
+    border: 2px solid #4ade80;
+    padding: 16px 32px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-create-first:hover {
+    background: #4ade80;
+    color: white;
+    border-color: #22c55e;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74, 222, 128, 0.3);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 16px;
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .header-section h1 {
+        font-size: 2.2rem;
+    }
+
+    .plan-card-header,
+    .plan-card-body {
+        padding: 16px;
+    }
+
+    .empty-state {
+        padding: 40px 16px;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.plan-card {
+    animation: slideInUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+.create-new-card {
+    animation: slideInUp 0.6s ease forwards;
+    opacity: 0;
+}

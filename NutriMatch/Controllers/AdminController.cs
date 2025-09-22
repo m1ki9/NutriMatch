@@ -39,8 +39,8 @@ public class AdminController : Controller
             }
 
             int recipeId = recipeIdProp.GetInt32();
-            
-            
+
+
             var recipe = await _context.Recipes
                 .Include(r => r.RecipeIngredients)
                 .ThenInclude(ri => ri.Ingredient)
@@ -52,21 +52,21 @@ public class AdminController : Controller
             }
 
             recipe.RecipeStatus = "Accepted";
-            
+
             if (recipe.HasPendingIngredients == true)
             {
                 var pendingIngredients = recipe.RecipeIngredients
                     .Where(ri => ri.Ingredient.Status == "Pending")
                     .Select(ri => ri.Ingredient);
-                    
+
                 foreach (var ingredient in pendingIngredients)
                 {
-                    ingredient.Status = null; 
+                    ingredient.Status = null;
                 }
-                
-                recipe.HasPendingIngredients = false; 
+
+                recipe.HasPendingIngredients = false;
             }
-            
+
             await _context.SaveChangesAsync();
 
             return Json(new { message = "Recipe approved successfully.", success = true });
@@ -102,7 +102,7 @@ public class AdminController : Controller
             recipe.RecipeStatus = "Declined";
             recipe.DeclineReason = reason ?? string.Empty;
             recipe.AdminComment = notes ?? string.Empty;
-            
+
             await _context.SaveChangesAsync();
 
             return Json(new { message = "Recipe declined successfully.", success = true });
@@ -134,7 +134,6 @@ public class AdminController : Controller
                 return Json(new { success = false, message = "No recipe IDs provided." });
             }
 
-            // Include RecipeIngredients and Ingredients for bulk approval
             var recipes = await _context.Recipes
                 .Include(r => r.RecipeIngredients)
                 .ThenInclude(ri => ri.Ingredient)
@@ -150,19 +149,19 @@ public class AdminController : Controller
             foreach (var recipe in recipes)
             {
                 recipe.RecipeStatus = "Accepted";
-                
+
                 if (recipe.HasPendingIngredients == true)
                 {
                     var pendingIngredients = recipe.RecipeIngredients
                         .Where(ri => ri.Ingredient.Status == "Pending")
                         .Select(ri => ri.Ingredient);
-                        
+
                     foreach (var ingredient in pendingIngredients)
                     {
-                        ingredient.Status = null; 
+                        ingredient.Status = null;
                     }
-                    
-                    recipe.HasPendingIngredients = false; 
+
+                    recipe.HasPendingIngredients = false;
                 }
 
                 approvedCount++;
@@ -170,10 +169,11 @@ public class AdminController : Controller
 
             await _context.SaveChangesAsync();
 
-            return Json(new { 
-                message = $"{approvedCount} recipe(s) approved successfully.", 
-                success = true, 
-                approvedCount = approvedCount 
+            return Json(new
+            {
+                message = $"{approvedCount} recipe(s) approved successfully.",
+                success = true,
+                approvedCount = approvedCount
             });
         }
         catch (Exception ex)

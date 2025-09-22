@@ -1,4 +1,4 @@
-using System;   
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,7 +17,7 @@ namespace NutriMatch.Models
         public String[]? Instructions { get; set; }
         [ValidateNever]
         [NotMapped]
-        public double Rating { get; set; } 
+        public double Rating { get; set; }
         [ValidateNever]
         public virtual List<RecipeIngredient> RecipeIngredients { get; set; }
         [ValidateNever]
@@ -31,7 +31,7 @@ namespace NutriMatch.Models
         [ValidateNever]
         public String ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
-        public String RecipeStatus { get; set; } = "Pending"; //"Pending", "Accepted", "Declined"
+        public String RecipeStatus { get; set; } = "Pending";
         public String AdminComment { get; set; } = String.Empty;
         public String DeclineReason { get; set; } = String.Empty;
 

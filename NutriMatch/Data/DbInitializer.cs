@@ -19,7 +19,7 @@ public class DbInitializer
                 await roleManager.CreateAsync(new IdentityRole(role));
         }
 
-        // Optional: Seed admin user
+        //Seed admin user
         string adminEmail = "admin@nutrimatch.com";
         string adminPassword = "Admin123!";
 

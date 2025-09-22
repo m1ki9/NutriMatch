@@ -154,7 +154,6 @@ namespace NutriMatch.Controllers
             return Json(mealPlan);
         }
 
-        // Optional: Keep this method if you need API access for other purposes
         [HttpPost]
         public async Task<IActionResult> GenerateFromApi([FromBody] MealPlanRequest request)
         {
@@ -168,8 +167,8 @@ namespace NutriMatch.Controllers
 
             if (result.Success)
             {
-                return Ok(new 
-                { 
+                return Ok(new
+                {
                     success = true,
                     message = "Weekly meal plan generated successfully!",
                     mealPlan = result.WeeklyMealPlan,
