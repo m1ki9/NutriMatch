@@ -1,5 +1,6 @@
 @model NutriMatch.Models.Recipe
-<div class="modal fade" id="recipeDeclineModal" tabindex="-1" aria-labelledby="recipeDeclineModalLabel" aria-hidden="true">
+<div class="modal fade" id="recipeDeclineModal" tabindex="-1" aria-labelledby="recipeDeclineModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
@@ -7,7 +8,8 @@
                     <i class="fas fa-times-circle me-2"></i>
                     Decline Recipe
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="recipe-info-section mb-4">
@@ -57,10 +59,7 @@
                             <i class="fas fa-sticky-note me-1"></i>
                             Additional Notes <span class="text-muted">(Optional)</span>
                         </label>
-                        <textarea 
-                            class="form-control" 
-                            id="declineNotes" 
-                            rows="4" 
+                        <textarea class="form-control" id="declineNotes" rows="4"
                             placeholder="Provide additional details about why this recipe is being declined. This information will help the user understand the decision and improve future submissions."
                             maxlength="500"></textarea>
                         <div class="form-text">
@@ -70,7 +69,8 @@
                     <div class="alert alert-warning d-flex align-items-center" role="alert">
                         <i class="fas fa-info-circle me-2"></i>
                         <div>
-                            <strong>Note:</strong> Once declined, the recipe will be removed from the pending list and the user will be notified of the decision.
+                            <strong>Note:</strong> Once declined, the recipe will be removed from the pending list and
+                            the user will be notified of the decision.
                         </div>
                     </div>
                 </form>
@@ -124,10 +124,10 @@
     }
 </style>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         initializeDeclineModal();
     });
-    document.getElementById('recipeDeclineModal').addEventListener('shown.bs.modal', function() {
+    document.getElementById('recipeDeclineModal').addEventListener('shown.bs.modal', function () {
         initializeDeclineModal();
     });
     function initializeDeclineModal() {
@@ -141,7 +141,7 @@
         }
         const newDeclineReasonSelect = declineReasonSelect.cloneNode(true);
         declineReasonSelect.parentNode.replaceChild(newDeclineReasonSelect, declineReasonSelect);
-        newDeclineReasonSelect.addEventListener('change', function() {
+        newDeclineReasonSelect.addEventListener('change', function () {
             const confirmBtn = document.getElementById('confirmDeclineBtn');
             if (confirmBtn) {
                 confirmBtn.disabled = !this.value;
@@ -151,14 +151,14 @@
                 this.classList.remove('is-invalid');
             }
         });
-        newDeclineReasonSelect.addEventListener('input', function() {
+        newDeclineReasonSelect.addEventListener('input', function () {
             const confirmBtn = document.getElementById('confirmDeclineBtn');
             if (confirmBtn) {
                 confirmBtn.disabled = !this.value;
             }
         });
         if (declineNotesTextarea && notesCounter) {
-            declineNotesTextarea.addEventListener('input', function() {
+            declineNotesTextarea.addEventListener('input', function () {
                 const currentLength = this.value.length;
                 notesCounter.textContent = currentLength;
                 if (currentLength > 400) {
@@ -170,7 +170,7 @@
                 }
             });
         }
-        confirmDeclineBtn.addEventListener('click', function() {
+        confirmDeclineBtn.addEventListener('click', function () {
             const recipeId = document.getElementById('declineRecipeId').value;
             const reasonSelect = document.getElementById('declineReason');
             const reason = reasonSelect.value;
@@ -201,43 +201,43 @@
                 notes: notes || ''
             })
         })
-        .then(response => {
-            console.log('Response status:', response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                return response.text().then(text => {
-                    console.error('Non-JSON response:', text);
-                    throw new Error('Server returned non-JSON response');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data && data.success) {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('recipeDeclineModal'));
-                modal.hide();
-                showSuccess('Recipe declined successfully!');
-                removeRecipeCard(recipeId);
-            } else {
-                const errorMessage = data && data.message ? data.message : 'Failed to decline recipe';
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    return response.text().then(text => {
+                        console.error('Non-JSON response:', text);
+                        throw new Error('Server returned non-JSON response');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('recipeDeclineModal'));
+                    modal.hide();
+                    showSuccess('Recipe declined successfully!');
+                    removeRecipeCard(recipeId);
+                } else {
+                    const errorMessage = data && data.message ? data.message : 'Failed to decline recipe';
+                    showError(errorMessage);
+                    resetDeclineButton();
+                }
+            })
+            .catch(error => {
+                console.error('Error details:', error);
+                let errorMessage = 'An error occurred while declining the recipe';
+                if (error.message.includes('HTTP error! status: 500')) {
+                    errorMessage = 'Server error occurred. Please check the server logs and try again.';
+                } else if (error.message.includes('non-JSON response')) {
+                    errorMessage = 'Server returned an unexpected response format.';
+                }
                 showError(errorMessage);
                 resetDeclineButton();
-            }
-        })
-        .catch(error => {
-            console.error('Error details:', error);
-            let errorMessage = 'An error occurred while declining the recipe';
-            if (error.message.includes('HTTP error! status: 500')) {
-                errorMessage = 'Server error occurred. Please check the server logs and try again.';
-            } else if (error.message.includes('non-JSON response')) {
-                errorMessage = 'Server returned an unexpected response format.';
-            }
-            showError(errorMessage);
-            resetDeclineButton();
-        });
+            });
     }
     function resetDeclineButton() {
         const confirmBtn = document.getElementById('confirmDeclineBtn');
@@ -248,7 +248,7 @@
             confirmBtn.innerHTML = '<i class="fas fa-times me-1"></i>Decline Recipe';
         }
     }
-    document.getElementById('recipeDeclineModal').addEventListener('hidden.bs.modal', function() {
+    document.getElementById('recipeDeclineModal').addEventListener('hidden.bs.modal', function () {
         const form = document.getElementById('declineForm');
         if (form) {
             form.reset();

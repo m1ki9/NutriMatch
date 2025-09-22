@@ -1,4 +1,4 @@
-using System;   
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
 namespace NutriMatch.Models
 {
     public class Recipe
@@ -16,7 +17,7 @@ namespace NutriMatch.Models
         public String[]? Instructions { get; set; }
         [ValidateNever]
         [NotMapped]
-        public double Rating { get; set; } 
+        public double Rating { get; set; }
         [ValidateNever]
         public virtual List<RecipeIngredient> RecipeIngredients { get; set; }
         [ValidateNever]
@@ -33,7 +34,9 @@ namespace NutriMatch.Models
         public String RecipeStatus { get; set; } = "Pending";
         public String AdminComment { get; set; } = String.Empty;
         public String DeclineReason { get; set; } = String.Empty;
+
         public bool? HasPendingIngredients { get; set; }
+
         [ValidateNever]
         public String UserId { get; set; }
         [ValidateNever]

@@ -1,6 +1,9 @@
 @model NutriMatch.Models.Recipe
+
 <link href="~/css/_RecipeDeletePartial.css" rel="stylesheet" />
-<div class="modal fade delete-modal" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+
+<div class="modal fade delete-modal" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,6 +17,7 @@
                     <h4>Are you sure you want to delete this recipe?</h4>
                     <p>This action cannot be undone. The recipe will be permanently removed from your collection.</p>
                 </div>
+
                 <div class="recipe-preview-card">
                     <div class="recipe-preview-header">
                         <img src="@Model.ImageUrl" alt="@Model.Title" class="recipe-preview-image">
@@ -26,6 +30,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="recipe-details-grid">
                         <div class="detail-item">
                             <span class="detail-label">Calories:</span>
@@ -53,6 +58,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="delete-actions">
                     <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Cancel
@@ -68,19 +74,21 @@
         </div>
     </div>
 </div>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
         if (confirmDeleteBtn) {
-            confirmDeleteBtn.addEventListener('click', function() {
+            confirmDeleteBtn.addEventListener('click', function () {
                 this.classList.add('loading');
                 this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting...';
                 this.disabled = true;
             });
         }
+
         const deleteModal = document.getElementById('deleteConfirmModal');
         if (deleteModal) {
-            deleteModal.addEventListener('hidden.bs.modal', function() {
+            deleteModal.addEventListener('hidden.bs.modal', function () {
                 const confirmBtn = document.getElementById('confirmDeleteBtn');
                 if (confirmBtn) {
                     confirmBtn.classList.remove('loading');

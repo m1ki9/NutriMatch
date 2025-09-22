@@ -1,16 +1,10 @@
 
 #nullable disable
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using NutriMatch.Models;
 namespace NutriMatch.Areas.Identity.Pages.Account
 {
@@ -140,16 +134,16 @@ namespace NutriMatch.Areas.Identity.Pages.Account
                 }
                 await _signInManager.RefreshSignInAsync(user);
                 StatusMessage = "Your profile has been updated successfully.";
-                _logger.LogInformation("User {UserId} updated profile. New Email: {Email}, New UserName: {UserName}", 
+                _logger.LogInformation("User {UserId} updated profile. New Email: {Email}, New UserName: {UserName}",
                     user.Id, user.Email, user.UserName);
-                    if (!updateResult.Succeeded)
+                if (!updateResult.Succeeded)
+                {
+                    foreach (var error in updateResult.Errors)
                     {
-                        foreach (var error in updateResult.Errors)
-                        {
-                            _logger.LogError("Update failed: {Error}", error.Description);
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
+                        _logger.LogError("Update failed: {Error}", error.Description);
+                        ModelState.AddModelError(string.Empty, error.Description);
                     }
+                }
             }
             else
             {
@@ -195,8 +189,8 @@ namespace NutriMatch.Areas.Identity.Pages.Account
                 Email = user.Email,
                 UserName = user.UserName
             };
-            ProfilePictureUrl = !string.IsNullOrEmpty(user.ProfilePictureUrl) 
-                ? user.ProfilePictureUrl 
+            ProfilePictureUrl = !string.IsNullOrEmpty(user.ProfilePictureUrl)
+                ? user.ProfilePictureUrl
                 : GetProfilePictureUrl(user.Id);
         }
         private async Task<(bool Success, string ErrorMessage)> SaveProfilePictureAsync(IFormFile file, string userId)

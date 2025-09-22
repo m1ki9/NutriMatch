@@ -21,23 +21,16 @@
                 <form asp-action="Edit" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="Title" class="label">Recipe Title</label>
-                        <input type="text" 
-                               name="Title" 
-                               id="Title" 
-                               class="input" 
-                               placeholder="Enter your recipe name..."
-                               value="@Model.Title"
-                               required />
+                        <input type="text" name="Title" id="Title" class="input" placeholder="Enter your recipe name..."
+                            value="@Model.Title" required />
                         <div class="validation-error" id="titleValidation"></div>
                     </div>
                     <div class="form-group">
                         <label class="label">Ingredients</label>
                         <div class="search-container">
                             <div class="flex-row">
-                                <input type="text" 
-                                       class="input flex-2" 
-                                       placeholder="Search ingredients..." 
-                                       id="ingredientSearch">
+                                <input type="text" class="input flex-2" placeholder="Search ingredients..."
+                                    id="ingredientSearch">
                                 <select class="input flex-1" id="ingredientUnit">
                                     <option value="">Unit</option>
                                     <option value="g">Grams</option>
@@ -47,12 +40,8 @@
                                     <option value="tsp">Teaspoon</option>
                                     <option value="cup">Cup</option>
                                 </select>
-                                <input type="number" 
-                                       class="input flex-1" 
-                                       placeholder="Amount" 
-                                       id="ingredientQuantity" 
-                                       step="0.01" 
-                                       min="0">
+                                <input type="number" class="input flex-1" placeholder="Amount" id="ingredientQuantity"
+                                    step="0.01" min="0">
                                 <button type="button" class="btn btn-primary" id="addIngredientButton">
                                     Add
                                 </button>
@@ -67,9 +56,8 @@
                     <div class="form-group">
                         <label class="label">Instructions</label>
                         <div class="flex-row">
-                            <textarea class="input textarea flex-1" 
-                                      placeholder="Add a cooking step..." 
-                                      id="instructionInput"></textarea>
+                            <textarea class="input textarea flex-1" placeholder="Add a cooking step..."
+                                id="instructionInput"></textarea>
                             <button type="button" class="btn btn-primary" id="addInstructionButton">
                                 Add Step
                             </button>
@@ -78,19 +66,21 @@
                             <div class="items-empty">
                             </div>
                         </div>
-                        <input type="hidden" id="selectedInstructions"  name="Instructions" />
+                        <input type="hidden" id="selectedInstructions" name="Instructions" />
                     </div>
                     <div class="form-group">
-                    <label class="form-label">Recipe Photo</label>
+                        <label class="form-label">Recipe Photo</label>
                         <div class="file-upload-area" id="fileUploadArea">
                             <div class="file-upload-icon">📷</div>
                             <p><strong>Click to upload</strong> or drag and drop</p>
                             <p>PNG, JPG, GIF up to 10MB</p>
-                            <input  type="file" id="RecipeImage" name="RecipeImage" accept="image/*" style="display: none;">
+                            <input type="file" id="RecipeImage" name="RecipeImage" accept="image/*"
+                                style="display: none;">
                             <input type="hidden" name="ExistingImageUrl" value="@Model.ImageUrl" />
                         </div>
                         <div id="imagePreview" style="margin-top: 1rem; text-align: center;">
-                        <img src="@Model.ImageUrl" alt="Recipe preview" style="max-width: 300px; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                            <img src="@Model.ImageUrl" alt="Recipe preview"
+                                style="max-width: 300px; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                         </div>
                     </div>
                     <div class="form-actions">
@@ -101,10 +91,10 @@
                 </form>
             </div>
         </div>
-        @if(!@ViewBag.RequireChange)
+        @if (!@ViewBag.RequireChange)
         {
-           <a href="/Recipes" class="back-link">
-            ← Back to Recipes
+            <a href="/Recipes" class="back-link">
+                ← Back to Recipes
             </a>
         }
     </div>
@@ -120,7 +110,7 @@
 <script>
     const requireChange = @((ViewBag.RequireChange ?? false).ToString().ToLower());
     document.addEventListener("DOMContentLoaded", () => {
-        if (!requireChange) return; 
+        if (!requireChange) return;
         const form = document.querySelector("form");
         let changed = false;
         form.addEventListener("input", () => {

@@ -1,8 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using NutriMatch.Data;
 using NutriMatch.Models;
-using NutriMatch.Services;
 namespace NutriMatch.Services
 {
     public class MealPlanService : IMealPlanService
@@ -63,14 +61,14 @@ namespace NutriMatch.Services
                             }
                             else
                             {
-                                var recipe = await SelectRecipeAsync(mealType, targetMacros, request.DietaryRestrictions);
+                                var recipe = await SelectRecipeAsync(mealType, targetMacros);
                                 mealSlot.Recipe = recipe;
                                 mealSlot.IsRestaurantMeal = false;
                             }
                         }
                         else
                         {
-                            var recipe = await SelectRecipeAsync(mealType, targetMacros, request.DietaryRestrictions);
+                            var recipe = await SelectRecipeAsync(mealType, targetMacros);
                             if (recipe != null)
                             {
                                 mealSlot.Recipe = recipe;
@@ -94,7 +92,7 @@ namespace NutriMatch.Services
                             Day = day,
                             MealType = "snack"
                         };
-                        var snackRecipe = await SelectRecipeAsync("snack", snackMacros, request.DietaryRestrictions);
+                        var snackRecipe = await SelectRecipeAsync("snack", snackMacros);
                         if (snackRecipe != null)
                         {
                             snackSlot.Recipe = snackRecipe;
@@ -170,25 +168,20 @@ namespace NutriMatch.Services
                 Fat = dailyMacros.Fat * distribution
             };
         }
-        private async Task<Recipe> SelectRecipeAsync(string mealType, DailyMacros targetMacros, List<string> dietaryRestrictions)
+        private async Task<Recipe> SelectRecipeAsync(string mealType, DailyMacros targetMacros)
         {
             var query = _context.Recipes
                 .Include(r => r.RecipeIngredients)
                 .Where(r => r.RecipeStatus == "Accepted");
             if (!string.IsNullOrEmpty(mealType))
             {
-                query = query.Where(r => r.Type.Contains(mealType) || r.Type.Count == 0);
-            }
-            foreach (var restriction in dietaryRestrictions)
-            {
-                query = query.Where(r => !r.Type.Contains(restriction));
+                query = query.Where(r => r.Type.Contains(mealType));
             }
             var recipes = await query.ToListAsync();
             if (!recipes.Any())
             {
                 recipes = await _context.Recipes
                     .Where(r => r.RecipeStatus == "Accepted")
-                    .Take(50)
                     .ToListAsync();
             }
             if (!recipes.Any()) return null;
@@ -208,9 +201,9 @@ namespace NutriMatch.Services
             var query = _context.RestaurantMeals.AsQueryable();
             if (!string.IsNullOrEmpty(mealType))
             {
-                query = query.Where(rm => rm.Type.Contains(mealType) || rm.Type.Count == 0);
+                query = query.Where(rm => rm.Type.Contains(mealType));
             }
-            var restaurantMeals = await query.Take(50).ToListAsync();
+            var restaurantMeals = await query.ToListAsync();
             if (!restaurantMeals.Any()) return null;
             var scoredMeals = restaurantMeals.Select(meal => new
             {
@@ -240,7 +233,7 @@ namespace NutriMatch.Services
         }
         private float CalculateRemainingCalories(List<MealSlot> dayMeals, float targetCalories)
         {
-            var totalCalories = dayMeals.Sum(ms => 
+            var totalCalories = dayMeals.Sum(ms =>
                 ms.IsRestaurantMeal ? (ms.RestaurantMeal?.Calories ?? 0) : (ms.Recipe?.Calories ?? 0));
             return Math.Max(0, targetCalories - totalCalories);
         }
@@ -261,21 +254,6 @@ namespace NutriMatch.Services
             }
             return dailyTotals;
         }
-        public async Task<List<Recipe>> GetSuitableRecipesAsync(string mealType, DailyMacros targetMacros, List<string> dietaryRestrictions)
-        {
-            var query = _context.Recipes
-                .Include(r => r.RecipeIngredients)
-                .Where(r => r.RecipeStatus == "Accepted");
-            if (!string.IsNullOrEmpty(mealType))
-            {
-                query = query.Where(r => r.Type.Contains(mealType));
-            }
-            foreach (var restriction in dietaryRestrictions)
-            {
-                query = query.Where(r => !r.Type.Contains(restriction));
-            }
-            return await query.ToListAsync();
-        }
         public async Task<List<RestaurantMeal>> GetSuitableRestaurantMealsAsync(string mealType, DailyMacros targetMacros)
         {
             var query = _context.RestaurantMeals.AsQueryable();
@@ -287,6 +265,7 @@ namespace NutriMatch.Services
         }
         public async Task<WeeklyMealPlan> GetMealPlanByIdAsync(int id, string userId)
         {
+#pragma warning disable CS8603
             return await _context.WeeklyMealPlans
                 .Include(wmp => wmp.MealSlots)
                     .ThenInclude(ms => ms.Recipe)

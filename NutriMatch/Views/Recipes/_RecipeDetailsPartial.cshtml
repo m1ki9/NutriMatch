@@ -51,61 +51,72 @@
                                             }
                                         </div>
                                         <span class="rating-value">(@averageRating.ToString("0.0"))</span>
-                                        <span class="rating-count">@totalRatings review@(totalRatings != 1 ? "s" : "")</span>
+                                        <span class="rating-count">@totalRatings review@(totalRatings != 1 ? "s" :
+                                                                                        "")</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="recipe-actions">
-                            @if(AddAdminButtons){
-                                    <div class="admin-actions">
-                                        <button onclick="approveRecipe(@Model.Id)" class="admin-btn approve-btn subtle" title="Approve Recipe">
-                                            <i></i>
-                                            <span>Approve</span>
-                                        </button>
-                                        <button onclick="declineRecipe(@Model.Id)" class="admin-btn decline-btn subtle" title="Decline Recipe">
-                                            <i></i>
-                                            <span>Decline</span>
-                                        </button>
-                                    </div>
+                            @if (AddAdminButtons)
+                            {
+                                <div class="admin-actions">
+                                    <button onclick="approveRecipe(@Model.Id)" class="admin-btn approve-btn subtle"
+                                        title="Approve Recipe">
+                                        <i></i>
+                                        <span>Approve</span>
+                                    </button>
+                                    <button onclick="declineRecipe(@Model.Id)" class="admin-btn decline-btn subtle"
+                                        title="Decline Recipe">
+                                        <i></i>
+                                        <span>Decline</span>
+                                    </button>
+                                </div>
                             }
-                            else{
-                                @if(isOwner){
-                                    if(!InIndex){
-                                    <div class="d-flex gap-2">
-                                        <button onclick="location.href='/Recipes/Edit/@Model.Id'" class="action-btn edit-btn" title="Edit Recipe">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button onclick="openDeleteModal('@Model.Id')" class="action-btn delete-btn" title="Delete Recipe">
-                                            <i class="fas fa-trash"></i>
+                            else
+                            {
+                                @if (isOwner)
+                                {
+                                    if (!InIndex)
+                                    {
+                                        <div class="d-flex gap-2">
+                                            <button onclick="location.href='/Recipes/Edit/@Model.Id'" class="action-btn edit-btn"
+                                                title="Edit Recipe">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button onclick="openDeleteModal('@Model.Id')" class="action-btn delete-btn"
+                                                title="Delete Recipe">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="rate-recipe">
+                                        <span class="rate-label">@(hasUserRated ? "Your rating:" : "Rate this recipe:")</span>
+                                        <div class="rating-input" id="userRatingStars">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="@(i <= userRating ? "fas" : "far") fa-star rating-star" data-rating="@i"
+                                                    onclick="rateRecipe(@i, @Model.Id)"></i>
+                                            }
+                                        </div>
+                                        @if (hasUserRated)
+                                        {
+                                            <button class="remove-rating-btn" onclick="removeRating(@Model.Id)"
+                                                title="Remove your rating">
+                                                <i class="fas fa-times"></i> Remove
+                                            </button>
+                                        }
+                                    </div>
+                                    <div>
+                                        <button class="action-btn favorite-btn-details @(isFavorited ? "favorited" : "")"
+                                            onclick="toggleFavorite(@Model.Id)"
+                                            title="@(isFavorited ? "Remove from Favorites" : "Add to Favorites")">
+                                            <i class="far fa-heart"></i>
                                         </button>
                                     </div>
-                                    }
-                                } else {
-                                            <div class="rate-recipe">
-                                                <span class="rate-label">@(hasUserRated ? "Your rating:" : "Rate this recipe:")</span>
-                                                <div class="rating-input" id="userRatingStars">
-                                                    @for (int i = 1; i <= 5; i++)
-                                                    {
-                                                        <i class="@(i <= userRating ? "fas" : "far") fa-star rating-star" 
-                                                        data-rating="@i" 
-                                                        onclick="rateRecipe(@i, @Model.Id)"></i>
-                                                    }
-                                                </div>
-                                                @if (hasUserRated)
-                                                {
-                                                    <button class="remove-rating-btn" onclick="removeRating(@Model.Id)" title="Remove your rating">
-                                                        <i class="fas fa-times"></i> Remove
-                                                    </button>
-                                                }
-                                            </div>
-                                            <div> 
-                                                    <button class="action-btn favorite-btn-details @(isFavorited ? "favorited" : "")" 
-                                                            onclick="toggleFavorite(@Model.Id)" 
-                                                            title="@(isFavorited ? "Remove from Favorites" : "Add to Favorites")">
-                                                    <i class="far fa-heart"></i>
-                                                    </button>
-                                            </div>
                                 }
                             }
                         </div>
@@ -151,7 +162,7 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                       <div class="ingredients-list">
+                        <div class="ingredients-list">
                             <h4 class="section-title">
                                 <i class="fas fa-list-ul"></i>
                                 Ingredients
@@ -160,14 +171,17 @@
                             {
                                 @for (int i = 0; i < Model.RecipeIngredients.Count; i++)
                                 {
-                                    <div class="ingredient-item" style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div class="ingredient-item"
+                                        style="display: flex; align-items: center; justify-content: space-between;">
                                         <div style="display: flex; align-items: center; flex: 1;">
-                                            <input type="checkbox" class="ingredient-checkbox" id="ingredient@(i + 1)"> 
+                                            <input type="checkbox" class="ingredient-checkbox" id="ingredient@(i + 1)">
                                             <label for="ingredient@(i + 1)" style="margin-left: 8px;">
-                                                @Model.RecipeIngredients[i].Ingredient.Name, @Model.RecipeIngredients[i].Quantity @Model.RecipeIngredients[i].Unit
+                                                @Model.RecipeIngredients[i].Ingredient.Name,
+                                                @Model.RecipeIngredients[i].Quantity @Model.RecipeIngredients[i].Unit
                                                 @if (Model.RecipeIngredients[i].Ingredient.Status == "Pending")
                                                 {
-                                                    <span class="pending-badge" style="background-color: #ffc107; color: #212529; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px;">
+                                                    <span class="pending-badge"
+                                                        style="background-color: #ffc107; color: #212529; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px;">
                                                         <i class="fas fa-clock"></i> Pending Review
                                                     </span>
                                                 }
@@ -175,8 +189,9 @@
                                         </div>
                                         @if (Model.RecipeIngredients[i].Ingredient.Status == "Pending")
                                         {
-                                            <button onclick="viewIngredientReview(@Model.RecipeIngredients[i].Ingredient.Id)" type="button" class="btn btn-sm btn-outline-primary view-ingredient-btn" 
-                                                    style="margin-left: 10px;">
+                                            <button onclick="viewIngredientReview(@Model.RecipeIngredients[i].Ingredient.Id)"
+                                                type="button" class="btn btn-sm btn-outline-success view-ingredient-btn"
+                                                style="margin-left: 10px;" id="view-ingr-btn">
                                                 <i class="fas fa-eye"></i> View
                                             </button>
                                         }
@@ -190,15 +205,21 @@
                                 Instructions
                             </h4>
                             @{
-                                var instructions = System.Text.Json.JsonSerializer.Deserialize<List<string>>(Model.Instructions[0]);
+                                var instructions =
+                                System.Text.Json.JsonSerializer.Deserialize<List<string>>(Model.Instructions[0]);
                             }
-                            @for(var i = 0; i < instructions.Count; i++){
-                                <div class="instruction-item" style="display: flex; flex-wrap: wrap; align-items: flex-start; background-color: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 8px; border-left: 4px solid #10b981;">
-                                    <span class="instruction-number" style="background-color: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 10px; flex-shrink: 0;">@(i + 1)</span>
-                                    <span class="instruction-text" style="flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.4;">
+                            @for (var i = 0; i < instructions.Count; i++)
+                            {
+                                <div class="instruction-item"
+                                    style="display: flex; flex-wrap: wrap; align-items: flex-start; background-color: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 8px; border-left: 4px solid #10b981;">
+                                    <span class="instruction-number"
+                                        style="background-color: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 10px; flex-shrink: 0;">@(i
+                                                                            + 1)</span>
+                                <span class="instruction-text"
+                                    style="flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.4;">
                                     @instructions[i]</span>
-                                </div>
-                            }
+                            </div>
+                                                        }
                         </div>
                     </div>
                 </div>
@@ -206,603 +227,254 @@
         </div>
     </div>
 </div>
-<style>
-.recipe-rating-section {
-    margin: 15px 0;
-}
-.current-rating {
-    margin-bottom: 10px;
-}
-.rating-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 5px;
-}
-.rating-stars {
-    display: flex;
-    gap: 2px;
-}
-.rating-stars i {
-    font-size: 18px;
-    color: #ddd;
-    transition: color 0.2s ease;
-}
-.rating-stars i.filled {
-    color: #fbbf24;
-}
-.rating-value {
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-}
-.rating-count {
-    font-size: 12px;
-    color: #6b7280;
-}
-.recipe-actions {
-    padding-top: 10px;
-    border-top: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-}
-.rate-recipe {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.rate-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #374151;
-}
-.rating-input {
-    display: flex;
-    gap: 3px;
-}
-.rating-star {
-    font-size: 20px;
-    color: #ddd;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-.rating-star:hover {
-    color: #fbbf24;
-    transform: scale(1.1);
-}
-.rating-star.active {
-    color: #fbbf24;
-}
-.remove-rating-btn {
-    background: none;
-    border: none;
-    color: #ef4444;
-    font-size: 12px;
-    cursor: pointer;
-    padding: 5px 0;
-    transition: color 0.2s ease;
-}
-.remove-rating-btn:hover {
-    color: #dc2626;
-    text-decoration: underline;
-}
-.favorite-btn-details {
-    background: none;
-    border: 2px solid #e5e7eb;
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: #6b7280;
-}
-.favorite-btn-details:hover {
-    border-color: #ef4444;
-    color: #ef4444;
-    transform: scale(1.05);
-}
-.favorite-btn-details.favorited {
-    background-color: #ef4444;
-    border-color: #ef4444;
-    color: white;
-}
-.favorite-btn-details.favorited:hover {
-    background-color: #dc2626;
-    border-color: #dc2626;
-}
-.favorite-btn-details i {
-    font-size: 18px;
-    transition: transform 0.2s ease;
-}
-.favorite-btn-details:hover i {
-    transform: scale(1.1);
-}
-.rating-toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #10b981;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    z-index: 9999;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-}
-.rating-toast.show {
-    transform: translateX(0);
-}
-.rating-toast.error {
-    background: #ef4444;
-}
-@@media (max-width: 768px) {
-    .rating-display {
-        flex-wrap: wrap;
-        gap: 5px;
-    }
-    .rate-recipe {
-        align-items: flex-start;
-    }
-}
-.admin-actions {
-    display: flex;
-    gap: 12px;
-    flex-direction: column;
-}
-.admin-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    min-width: 120px;
-}
-.approve-btn {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-.approve-btn:hover {
-    background: linear-gradient(135deg, #059669, #047857);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-}
-.approve-btn:active {
-    transform: translateY(0);
-}
-.decline-btn {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-.decline-btn:hover {
-    background: linear-gradient(135deg, #dc2626, #b91c1c);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-}
-.decline-btn:active {
-    transform: translateY(0);
-}
-.admin-btn i {
-    font-size: 16px;
-}
-.admin-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none !important;
-}
-.admin-btn.loading {
-    position: relative;
-    color: transparent;
-}
-.admin-btn.loading::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-top: 2px solid currentColor;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-}
-@@keyframes spin {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-@@media (min-width: 768px) {
-    .admin-actions {
-        flex-direction: row;
-    }
-}
-.admin-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-    justify-content: flex-start;
-    align-items: center;
-}
-.admin-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 25px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    outline: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.admin-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-.admin-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.admin-btn i {
-    font-size: 14px;
-    line-height: 1;
-}
-.admin-btn span {
-    line-height: 1;
-}
-.approve-btn {
-    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-    color: white;
-}
-.approve-btn:hover {
-    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
-}
-.approve-btn:focus {
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
-}
-.decline-btn {
-    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-    color: white;
-}
-.decline-btn:hover {
-    background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
-}
-.decline-btn:focus {
-    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.3);
-}
-.admin-btn.subtle {
-    background: #f8f9fa;
-    color: #6c757d;
-    border: 1px solid #e9ecef;
-}
-.admin-btn.subtle:hover {
-    background: #e9ecef;
-    color: #495057;
-    border-color: #dee2e6;
-}
-.approve-btn.subtle {
-    color: #28a745;
-    border-color: #28a745;
-}
-.approve-btn.subtle:hover {
-    background: #28a745;
-    color: white;
-}
-.decline-btn.subtle {
-    color: #dc3545;
-    border-color: #dc3545;
-}
-.decline-btn.subtle:hover {
-    background: #dc3545;
-    color: white;
-}
-@@media (max-width: 768px) {
-    .admin-actions {
-        flex-direction: column;
-        gap: 8px;
-        width: 100%;
-    }
-    .admin-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 12px 18px;
-    }
-}
-.admin-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-.admin-btn.loading {
-    position: relative;
-    color: transparent;
-}
-.admin-btn.loading::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -8px;
-    margin-left: -8px;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
-}
-@@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-</style>
 <script>
-document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        const label = this.nextElementSibling;
-        if (this.checked) {
-            label.style.textDecoration = 'line-through';
-            label.style.opacity = '0.6';
-        } else {
-            label.style.textDecoration = 'none';
-            label.style.opacity = '1';
-        }
+    document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const label = this.nextElementSibling;
+            if (this.checked) {
+                label.style.textDecoration = 'line-through';
+                label.style.opacity = '0.6';
+            } else {
+                label.style.textDecoration = 'none';
+                label.style.opacity = '1';
+            }
+        });
     });
-});
-document.getElementById('recipeModal').addEventListener('shown.bs.modal', function () {
-    this.querySelector('.modal-body').scrollTop = 0;
-});
-let isRatingInProgress = false;
-function rateRecipe(rating, recipeId) {
-    if (isRatingInProgress) return;
-    console.log(rating)
-    isRatingInProgress = true;
-    updateUserRatingDisplay(rating);
-    fetch('/Recipes/Rate', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
-        },
-        body: JSON.stringify({
-            recipeId: recipeId,
-            rating: rating
+    document.getElementById('recipeModal').addEventListener('shown.bs.modal', function () {
+        this.querySelector('.modal-body').scrollTop = 0;
+    });
+    let isRatingInProgress = false;
+    function rateRecipe(rating, recipeId) {
+        if (isRatingInProgress) return;
+        console.log(rating)
+        isRatingInProgress = true;
+        updateUserRatingDisplay(rating);
+        fetch('/Recipes/Rate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: JSON.stringify({
+                recipeId: recipeId,
+                rating: rating
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            updateAverageRatingDisplay(data.averageRating, data.totalRatings);
-            showRemoveRatingButton();
-            document.querySelector('.rate-label').textContent = 'Your rating:';
-            showToast('Rating submitted successfully!', 'success');
-        } else {
-            showToast(data.message || 'Failed to submit rating', 'error');
-            revertUserRatingDisplay();
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('An error occurred while submitting your rating', 'error');
-        revertUserRatingDisplay();
-    })
-    .finally(() => {
-        isRatingInProgress = false;
-    });
-}
-function removeRating(recipeId) {
-    if (isRatingInProgress) return;
-    isRatingInProgress = true;
-    fetch('/Recipes/RemoveRating', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
-        },
-        body: JSON.stringify({
-            recipeId: recipeId
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            updateAverageRatingDisplay(data.averageRating, data.totalRatings);
-            clearUserRatingDisplay();
-            hideRemoveRatingButton();
-            document.querySelector('.rate-label').textContent = 'Rate this recipe:';
-            showToast('Rating removed successfully!', 'success');
-        } else {
-            showToast(data.message || 'Failed to remove rating', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('An error occurred while removing your rating', 'error');
-    })
-    .finally(() => {
-        isRatingInProgress = false;
-    });
-}
-let isFavoriteInProgress = false;
-function toggleFavorite(recipeId) {
-    if (isFavoriteInProgress) return;
-    isFavoriteInProgress = true;
-    const favoriteBtn = document.querySelector('.favorite-btn-details');
-    const wasFavorited = favoriteBtn.classList.contains('favorited');
-    if (wasFavorited) {
-        favoriteBtn.classList.remove('favorited');
-        favoriteBtn.title = 'Add to Favorites';
-    } else {
-        favoriteBtn.classList.add('favorited');
-        favoriteBtn.title = 'Remove from Favorites';
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateAverageRatingDisplay(data.averageRating, data.totalRatings);
+                    showRemoveRatingButton();
+                    document.querySelector('.rate-label').textContent = 'Your rating:';
+                    showToast('Rating submitted successfully!', 'success');
+                } else {
+                    showToast(data.message || 'Failed to submit rating', 'error');
+                    revertUserRatingDisplay();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('An error occurred while submitting your rating', 'error');
+                revertUserRatingDisplay();
+            })
+            .finally(() => {
+                isRatingInProgress = false;
+            });
     }
-    fetch('/Recipes/ToggleFavorite', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
-        },
-        body: JSON.stringify({
-            recipeId: recipeId
+    function removeRating(recipeId) {
+        if (isRatingInProgress) return;
+        isRatingInProgress = true;
+        fetch('/Recipes/RemoveRating', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: JSON.stringify({
+                recipeId: recipeId
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            if (data.isFavorited) {
-                favoriteBtn.classList.add('favorited');
-                favoriteBtn.title = 'Remove from Favorites';
-                showToast('Added to favorites!', 'success');
-            } else {
-                favoriteBtn.classList.remove('favorited');
-                favoriteBtn.title = 'Add to Favorites';
-                showToast('Removed from favorites!', 'success');
-            }
-        } else {
-            if (wasFavorited) {
-                favoriteBtn.classList.add('favorited');
-                favoriteBtn.title = 'Remove from Favorites';
-            } else {
-                favoriteBtn.classList.remove('favorited');
-                favoriteBtn.title = 'Add to Favorites';
-            }
-            showToast(data.message || 'Failed to update favorites', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateAverageRatingDisplay(data.averageRating, data.totalRatings);
+                    clearUserRatingDisplay();
+                    hideRemoveRatingButton();
+                    document.querySelector('.rate-label').textContent = 'Rate this recipe:';
+                    showToast('Rating removed successfully!', 'success');
+                } else {
+                    showToast(data.message || 'Failed to remove rating', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('An error occurred while removing your rating', 'error');
+            })
+            .finally(() => {
+                isRatingInProgress = false;
+            });
+    }
+    let isFavoriteInProgress = false;
+    function toggleFavorite(recipeId) {
+        if (isFavoriteInProgress) return;
+        isFavoriteInProgress = true;
+        const favoriteBtn = document.querySelector('.favorite-btn-details');
+        const wasFavorited = favoriteBtn.classList.contains('favorited');
         if (wasFavorited) {
-            favoriteBtn.classList.add('favorited');
-            favoriteBtn.title = 'Remove from Favorites';
-        } else {
             favoriteBtn.classList.remove('favorited');
             favoriteBtn.title = 'Add to Favorites';
-        }
-        showToast('An error occurred while updating favorites', 'error');
-    })
-    .finally(() => {
-        isFavoriteInProgress = false;
-    });
-}
-function updateUserRatingDisplay(rating) {
-    const stars = document.querySelectorAll('#userRatingStars .rating-star');
-    stars.forEach((star, index) => {
-        if (index < rating) {
-            star.classList.remove('far');
-            star.classList.add('fas', 'active');
         } else {
+            favoriteBtn.classList.add('favorited');
+            favoriteBtn.title = 'Remove from Favorites';
+        }
+        fetch('/Recipes/ToggleFavorite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: JSON.stringify({
+                recipeId: recipeId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.isFavorited) {
+                        favoriteBtn.classList.add('favorited');
+                        favoriteBtn.title = 'Remove from Favorites';
+                        showToast('Added to favorites!', 'success');
+                    } else {
+                        favoriteBtn.classList.remove('favorited');
+                        favoriteBtn.title = 'Add to Favorites';
+                        showToast('Removed from favorites!', 'success');
+                    }
+                } else {
+                    if (wasFavorited) {
+                        favoriteBtn.classList.add('favorited');
+                        favoriteBtn.title = 'Remove from Favorites';
+                    } else {
+                        favoriteBtn.classList.remove('favorited');
+                        favoriteBtn.title = 'Add to Favorites';
+                    }
+                    showToast(data.message || 'Failed to update favorites', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (wasFavorited) {
+                    favoriteBtn.classList.add('favorited');
+                    favoriteBtn.title = 'Remove from Favorites';
+                } else {
+                    favoriteBtn.classList.remove('favorited');
+                    favoriteBtn.title = 'Add to Favorites';
+                }
+                showToast('An error occurred while updating favorites', 'error');
+            })
+            .finally(() => {
+                isFavoriteInProgress = false;
+            });
+    }
+    function updateUserRatingDisplay(rating) {
+        const stars = document.querySelectorAll('#userRatingStars .rating-star');
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('far');
+                star.classList.add('fas', 'active');
+            } else {
+                star.classList.remove('fas', 'active');
+                star.classList.add('far');
+            }
+        });
+    }
+    function clearUserRatingDisplay() {
+        const stars = document.querySelectorAll('#userRatingStars .rating-star');
+        stars.forEach(star => {
             star.classList.remove('fas', 'active');
             star.classList.add('far');
-        }
-    });
-}
-function clearUserRatingDisplay() {
-    const stars = document.querySelectorAll('#userRatingStars .rating-star');
-    stars.forEach(star => {
-        star.classList.remove('fas', 'active');
-        star.classList.add('far');
-    });
-}
-function revertUserRatingDisplay() {
-    const userRating = @userRating;
-    if (userRating > 0) {
-        updateUserRatingDisplay(userRating);
-    } else {
-        clearUserRatingDisplay();
+        });
     }
-}
-function updateAverageRatingDisplay(averageRating, totalRatings) {
-    const displayStars = document.querySelectorAll('#displayStars i');
-    displayStars.forEach((star, index) => {
-        const starValue = index + 1;
-        star.className = '';
-        if (starValue <= Math.floor(averageRating)) {
-            star.className = 'fas fa-star filled';
-        } else if (starValue <= averageRating) {
-            star.className = 'fas fa-star-half-alt filled';
+    function revertUserRatingDisplay() {
+        const userRating = @userRating;
+        if (userRating > 0) {
+            updateUserRatingDisplay(userRating);
         } else {
-            star.className = 'far fa-star';
+            clearUserRatingDisplay();
         }
-    });
-    document.querySelector('.rating-value').textContent = `(${averageRating.toFixed(1)})`;
-    document.querySelector('.rating-count').textContent = `${totalRatings} review${totalRatings !== 1 ? 's' : ''}`;
-}
-function showRemoveRatingButton() {
-    let removeBtn = document.querySelector('.remove-rating-btn');
-    if (!removeBtn) {
-        removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-rating-btn';
-        removeBtn.innerHTML = '<i class="fas fa-times"></i> Remove';
-        removeBtn.title = 'Remove your rating';
-        removeBtn.onclick = () => removeRating(@Model.Id);
-        document.querySelector('.rate-recipe').appendChild(removeBtn);
     }
-    removeBtn.style.display = 'block';
-}
-function hideRemoveRatingButton() {
-    const removeBtn = document.querySelector('.remove-rating-btn');
-    if (removeBtn) {
-        removeBtn.style.display = 'none';
+    function updateAverageRatingDisplay(averageRating, totalRatings) {
+        const displayStars = document.querySelectorAll('#displayStars i');
+        displayStars.forEach((star, index) => {
+            const starValue = index + 1;
+            star.className = '';
+            if (starValue <= Math.floor(averageRating)) {
+                star.className = 'fas fa-star filled';
+            } else if (starValue <= averageRating) {
+                star.className = 'fas fa-star-half-alt filled';
+            } else {
+                star.className = 'far fa-star';
+            }
+        });
+        document.querySelector('.rating-value').textContent = `(${averageRating.toFixed(1)})`;
+        document.querySelector('.rating-count').textContent = `${totalRatings} review${totalRatings !== 1 ? 's' : ''}`;
     }
-}
-function showToast(message, type = 'success') {
-    const existingToast = document.querySelector('.rating-toast');
-    if (existingToast) {
-        existingToast.remove();
+    function showRemoveRatingButton() {
+        let removeBtn = document.querySelector('.remove-rating-btn');
+        if (!removeBtn) {
+            removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-rating-btn';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i> Remove';
+            removeBtn.title = 'Remove your rating';
+            removeBtn.onclick = () => removeRating(@Model.Id);
+            document.querySelector('.rate-recipe').appendChild(removeBtn);
+        }
+        removeBtn.style.display = 'block';
     }
-    const toast = document.createElement('div');
-    toast.className = `rating-toast ${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 100);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-document.addEventListener('DOMContentLoaded', function() {
-    const userRatingStars = document.querySelectorAll('#userRatingStars .rating-star');
-    userRatingStars.forEach((star, index) => {
-        star.addEventListener('mouseenter', function() {
-            if (isRatingInProgress) return;
-            userRatingStars.forEach((s, i) => {
-                if (i <= index) {
-                    s.style.color = '#fbbf24';
-                } else {
-                    s.style.color = '#ddd';
-                }
+    function hideRemoveRatingButton() {
+        const removeBtn = document.querySelector('.remove-rating-btn');
+        if (removeBtn) {
+            removeBtn.style.display = 'none';
+        }
+    }
+    function showToast(message, type = 'success') {
+        const existingToast = document.querySelector('.rating-toast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+        const toast = document.createElement('div');
+        toast.className = `rating-toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const userRatingStars = document.querySelectorAll('#userRatingStars .rating-star');
+        userRatingStars.forEach((star, index) => {
+            star.addEventListener('mouseenter', function () {
+                if (isRatingInProgress) return;
+                userRatingStars.forEach((s, i) => {
+                    if (i <= index) {
+                        s.style.color = '#fbbf24';
+                    } else {
+                        s.style.color = '#ddd';
+                    }
+                });
+            });
+            star.addEventListener('mouseleave', function () {
+                if (isRatingInProgress) return;
+                const userRating = @userRating;
+                userRatingStars.forEach((s, i) => {
+                    if (i < userRating) {
+                        s.style.color = '#fbbf24';
+                    } else {
+                        s.style.color = '#ddd';
+                    }
+                });
             });
         });
-        star.addEventListener('mouseleave', function() {
-            if (isRatingInProgress) return;
-            const userRating = @userRating;
-            userRatingStars.forEach((s, i) => {
-                if (i < userRating) {
-                    s.style.color = '#fbbf24';
-                } else {
-                    s.style.color = '#ddd';
-                }
-            });
-        });
     });
-});
 </script>

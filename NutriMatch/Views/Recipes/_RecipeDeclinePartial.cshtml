@@ -1,436 +1,12 @@
 @model NutriMatch.Models.Recipe
-<style>
-.recipe-hero {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-.recipe-image-container {
-    position: relative;
-    flex: 1;
-    max-width: 300px;
-}
-.recipe-image-details {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-.recipe-info {
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.chef-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #6b7280;
-}
-.chef-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-.recipe-title-details {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1f2937;
-    margin: 0 0 15px 0;
-    line-height: 1.3;
-}
-.nutrition-card {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 15px;
-}
-.nutrition-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-.nutrition-item {
-    text-align: center;
-    padding: 12px 8px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease;
-}
-.nutrition-item:hover {
-    transform: translateY(-2px);
-}
-.nutrition-icon {
-    margin-bottom: 5px;
-}
-.nutrition-value {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1f2937;
-    margin-bottom: 2px;
-}
-.nutrition-label {
-    font-size: 12px;
-    color: #6b7280;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.ingredients-list, .instructions-list {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-.ingredient-item {
-    padding: 10px 0;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 14px;
-    color: #374151;
-}
-.ingredient-item:last-child {
-    border-bottom: none;
-}
-.ingredient-bullet {
-    color: #10b981;
-    font-weight: bold;
-    font-size: 16px;
-}
-.instruction-item {
-    display: flex;
-    align-items: flex-start;
-    background-color: #f8f9fa;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border-left: 4px solid #ef4444;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-.instruction-number {
-    background-color: #ef4444;
-    color: white;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: bold;
-    margin-right: 15px;
-    flex-shrink: 0;
-    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
-}
-.instruction-text {
-    flex: 1;
-    line-height: 1.6;
-    color: #374151;
-    font-size: 14px;
-}
-.decline-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    backdrop-filter: blur(2px);
-}
-.decline-badge {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-weight: bold;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-.decline-status {
-    margin: 15px 0;
-    padding: 15px;
-    background: linear-gradient(135deg, #fef2f2, #fee2e2);
-    border: 1px solid #fecaca;
-    border-radius: 10px;
-}
-.status-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 6px 0;
-    font-size: 14px;
-    color: #374151;
-}
-.status-item i {
-    width: 16px;
-    text-align: center;
-}
-.feedback-section {
-    margin: 25px 0;
-}
-.feedback-card {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-.feedback-header {
-    background: linear-gradient(135deg, #1e293b, #334155);
-    color: white;
-    padding: 18px 24px;
-}
-.feedback-header h4 {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 17px;
-    font-weight: 600;
-}
-.feedback-content {
-    padding: 24px;
-}
-.admin-comment {
-    font-size: 15px;
-    line-height: 1.7;
-    color: #374151;
-    background: #fef9f9;
-    padding: 20px;
-    border-radius: 10px;
-    border-left: 4px solid #ef4444;
-    position: relative;
-}
-.admin-comment::before {
-    content: '"';
-    font-size: 40px;
-    color: #ef4444;
-    position: absolute;
-    top: 10px;
-    left: 15px;
-    opacity: 0.3;
-    font-family: serif;
-}
-.no-comment {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #6b7280;
-    font-style: italic;
-    padding: 20px;
-    background: #f8fafc;
-    border-radius: 8px;
-    border: 2px dashed #d1d5db;
-}
-.recipe-actions {
-    padding-top: 20px;
-    border-top: 2px solid #e5e7eb;
-}
-.action-btn {
-    background: white;
-    border: 2px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: #374151;
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-.edit-btn:hover {
-    border-color: #3b82f6;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
-}
-.resubmit-btn:hover:not(.disabled) {
-    border-color: #10b981;
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-}
-.resubmit-btn.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    border-color: #d1d5db;
-    color: #9ca3af;
-    background: #f9fafb;
-}
-.resubmit-btn.disabled:hover {
-    transform: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-.resubmit-hint {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: #6b7280;
-    margin-top: 12px;
-    font-style: italic;
-    padding: 10px 15px;
-    background: #fffbeb;
-    border-radius: 8px;
-    border-left: 3px solid #f59e0b;
-}
-.decline-toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    padding: 16px 24px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 9999;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-    max-width: 350px;
-}
-.decline-toast.show {
-    transform: translateX(0);
-}
-.decline-toast.error {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
-}
-.fa-spinner {
-    animation: spin 1s linear infinite;
-}
-@@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-.modal-content {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-.modal-header {
-    background: linear-gradient(135deg, #fee2e2, #fecaca);
-    border-radius: 15px 15px 0 0;
-    padding: 20px 30px;
-}
-.modal-title {
-    font-weight: 700;
-    font-size: 20px;
-}
-.modal-body {
-    padding: 30px;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-.modal-body::-webkit-scrollbar {
-    width: 6px;
-}
-.modal-body::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
-}
-.modal-body::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
-}
-.modal-body::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-@@media (max-width: 768px) {
-    .recipe-hero {
-        flex-direction: column;
-        gap: 15px;
-    }
-    .recipe-image-container {
-        max-width: 100%;
-    }
-    .recipe-actions .d-flex {
-        flex-direction: column;
-        gap: 15px !important;
-    }
-    .action-btn {
-        justify-content: center;
-        width: 100%;
-        padding: 16px 20px;
-    }
-    .nutrition-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    .modal-body {
-        padding: 20px;
-    }
-    .feedback-content {
-        padding: 20px;
-    }
-    .admin-comment {
-        padding: 16px;
-    }
-    .decline-toast {
-        right: 10px;
-        left: 10px;
-        max-width: none;
-        transform: translateY(-100%);
-    }
-    .decline-toast.show {
-        transform: translateY(0);
-    }
-}
-@@media (max-width: 576px) {
-    .recipe-title-details {
-        font-size: 20px;
-    }
-    .modal-dialog {
-        margin: 10px;
-    }
-    .instruction-item {
-        padding: 12px;
-    }
-    .instruction-number {
-        width: 24px;
-        height: 24px;
-        font-size: 12px;
-        margin-right: 12px;
-    }
-}
-</style>
+<link href="~/css/_RecipeDeclinePartial.css" rel="stylesheet" />
 @{
     bool canResubmit = ViewBag.CanResubmit ?? false;
     DateTime? lastEditDate = ViewBag.LastEditDate;
     DateTime? declineDate = ViewBag.DeclineDate;
 }
-<div class="modal fade" id="recipeDeclineModal" tabindex="-1" aria-labelledby="recipeDeclineModalLabel" aria-hidden="true">
+<div class="modal fade" id="recipeDeclineModal" tabindex="-1" aria-labelledby="recipeDeclineModalLabel"
+    aria-hidden="true">
     @Html.AntiForgeryToken()
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -475,9 +51,8 @@
                         </div>
                         <div class="recipe-actions">
                             <div class="d-flex gap-3 align-items-center">
-                                <button onclick="location.href='/Recipes/Edit/@Model.Id?requiresChange=true'" 
-                                        class="action-btn edit-btn" 
-                                        title="Edit Recipe">
+                                <button onclick="location.href='/Recipes/Edit/@Model.Id?requiresChange=true'"
+                                    class="action-btn edit-btn" title="Edit Recipe">
                                     <i class="fas fa-edit"></i>
                                     <span>Edit and Resubmit Recipe</span>
                                 </button>
@@ -511,7 +86,8 @@
                             {
                                 <div class="no-comment">
                                     <i class="fas fa-info-circle"></i>
-                                    No specific feedback was provided. Please review your recipe for compliance with our guidelines.
+                                    No specific feedback was provided. Please review your recipe for compliance with our
+                                    guidelines.
                                 </div>
                             }
                         </div>
@@ -568,7 +144,8 @@
                                 {
                                     <div class="ingredient-item">
                                         <span class="ingredient-bullet">•</span>
-                                        <span>@Model.RecipeIngredients[i].Ingredient.Name, @Model.RecipeIngredients[i].Quantity @Model.RecipeIngredients[i].Unit</span>
+                                        <span>@Model.RecipeIngredients[i].Ingredient.Name, @Model.RecipeIngredients[i].Quantity
+                                            @Model.RecipeIngredients[i].Unit</span>
                                     </div>
                                 }
                             }
@@ -579,9 +156,11 @@
                                 Instructions
                             </h4>
                             @{
-                                var instructions = System.Text.Json.JsonSerializer.Deserialize<List<string>>(Model.Instructions[0]);
+                                var instructions =
+                                System.Text.Json.JsonSerializer.Deserialize<List<string>>(Model.Instructions[0]);
                             }
-                            @for(var i = 0; i < instructions.Count; i++){
+                            @for (var i = 0; i < instructions.Count; i++)
+                            {
                                 <div class="instruction-item">
                                     <span class="instruction-number">@(i + 1)</span>
                                     <span class="instruction-text">@instructions[i]</span>
@@ -594,287 +173,93 @@
         </div>
     </div>
 </div>
-<style>
-.decline-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-}
-.decline-badge {
-    background: #ef4444;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-.decline-status {
-    margin: 15px 0;
-    padding: 12px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-}
-.status-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 4px 0;
-    font-size: 14px;
-    color: #374151;
-}
-.feedback-section {
-    margin: 20px 0;
-}
-.feedback-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    overflow: hidden;
-}
-.feedback-header {
-    background: #1e293b;
-    color: white;
-    padding: 15px 20px;
-}
-.feedback-header h4 {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-}
-.feedback-content {
-    padding: 20px;
-}
-.admin-comment {
-    font-size: 15px;
-    line-height: 1.6;
-    color: #374151;
-    background: white;
-    padding: 16px;
-    border-radius: 8px;
-    border-left: 4px solid #ef4444;
-}
-.no-comment {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #6b7280;
-    font-style: italic;
-}
-.recipe-actions {
-    padding-top: 15px;
-    border-top: 1px solid #e5e7eb;
-}
-.action-btn {
-    background: none;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: #374151;
-    font-weight: 500;
-    text-decoration: none;
-}
-.edit-btn:hover {
-    border-color: #3b82f6;
-    background-color: #3b82f6;
-    color: white;
-    transform: translateY(-2px);
-}
-.resubmit-btn:hover:not(.disabled) {
-    border-color: #10b981;
-    background-color: #10b981;
-    color: white;
-    transform: translateY(-2px);
-}
-.resubmit-btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    border-color: #d1d5db;
-    color: #9ca3af;
-}
-.resubmit-hint {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: #6b7280;
-    margin-top: 8px;
-    font-style: italic;
-}
-.ingredient-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 8px 0;
-    border-bottom: 1px solid #f3f4f6;
-}
-.ingredient-bullet {
-    color: #10b981;
-    font-weight: bold;
-    margin-top: 2px;
-}
-.instruction-item {
-    display: flex;
-    align-items: flex-start;
-    background-color: #f8f9fa;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 8px;
-    border-left: 4px solid #ef4444;
-}
-.instruction-number {
-    background-color: #ef4444;
-    color: white;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-    margin-right: 12px;
-    flex-shrink: 0;
-}
-.instruction-text {
-    flex: 1;
-    line-height: 1.5;
-}
-.decline-toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #10b981;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    z-index: 9999;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-}
-.decline-toast.show {
-    transform: translateX(0);
-}
-.decline-toast.error {
-    background: #ef4444;
-}
-@@media (max-width: 768px) {
-    .recipe-actions .d-flex {
-        flex-direction: column;
-        gap: 12px !important;
-    }
-    .action-btn {
-        justify-content: center;
-        width: 100%;
-    }
-}
-</style>
 <script>
-document.getElementById('recipeDeclineModal').addEventListener('shown.bs.modal', function () {
-    this.querySelector('.modal-body').scrollTop = 0;
-});
-let isResubmitInProgress = false;
-function resubmitRecipe(recipeId) {
-    if (isResubmitInProgress) return;
-    const resubmitBtn = document.querySelector('.resubmit-btn');
-    if (resubmitBtn.classList.contains('disabled')) {
-        showDeclineToast('Please edit your recipe first before resubmitting', 'error');
-        return;
-    }
-    if (!confirm('Are you sure you want to resubmit this recipe for review?')) {
-        return;
-    }
-    isResubmitInProgress = true;
-    resubmitBtn.classList.add('disabled');
-    const originalText = resubmitBtn.innerHTML;
-    resubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Submitting...</span>';
-    fetch('/Recipes/Resubmit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
-        },
-        body: JSON.stringify({
-            recipeId: recipeId
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showDeclineToast('Recipe resubmitted successfully! It will be reviewed again.', 'success');
-            setTimeout(() => {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('recipeDeclineModal'));
-                if (modal) modal.hide();
-                if (data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
-                } else {
-                    setTimeout(() => window.location.reload(), 1000);
-                }
-            }, 1500);
-        } else {
-            showDeclineToast(data.message || 'Failed to resubmit recipe', 'error');
-            resubmitBtn.classList.remove('disabled');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showDeclineToast('An error occurred while resubmitting the recipe', 'error');
-        resubmitBtn.classList.remove('disabled');
-    })
-    .finally(() => {
-        isResubmitInProgress = false;
-        resubmitBtn.innerHTML = originalText;
+    document.getElementById('recipeDeclineModal').addEventListener('shown.bs.modal', function () {
+        this.querySelector('.modal-body').scrollTop = 0;
     });
-}
-function showDeclineToast(message, type = 'success') {
-    const existingToast = document.querySelector('.decline-toast');
-    if (existingToast) {
-        existingToast.remove();
-    }
-    const toast = document.createElement('div');
-    toast.className = `decline-toast ${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 100);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 4000);
-}
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('edited') === 'true') {
+    let isResubmitInProgress = false;
+    function resubmitRecipe(recipeId) {
+        if (isResubmitInProgress) return;
         const resubmitBtn = document.querySelector('.resubmit-btn');
-        if (resubmitBtn) {
-            resubmitBtn.classList.remove('disabled');
-            resubmitBtn.removeAttribute('disabled');
-            resubmitBtn.title = 'Resubmit for Review';
-            const hint = document.querySelector('.resubmit-hint');
-            if (hint) {
-                hint.style.display = 'none';
-            }
-            showDeclineToast('Recipe updated! You can now resubmit it for review.', 'success');
+        if (resubmitBtn.classList.contains('disabled')) {
+            showDeclineToast('Please edit your recipe first before resubmitting', 'error');
+            return;
         }
+        if (!confirm('Are you sure you want to resubmit this recipe for review?')) {
+            return;
+        }
+        isResubmitInProgress = true;
+        resubmitBtn.classList.add('disabled');
+        const originalText = resubmitBtn.innerHTML;
+        resubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Submitting...</span>';
+        fetch('/Recipes/Resubmit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: JSON.stringify({
+                recipeId: recipeId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showDeclineToast('Recipe resubmitted successfully! It will be reviewed again.', 'success');
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('recipeDeclineModal'));
+                        if (modal) modal.hide();
+                        if (data.redirectUrl) {
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            setTimeout(() => window.location.reload(), 1000);
+                        }
+                    }, 1500);
+                } else {
+                    showDeclineToast(data.message || 'Failed to resubmit recipe', 'error');
+                    resubmitBtn.classList.remove('disabled');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showDeclineToast('An error occurred while resubmitting the recipe', 'error');
+                resubmitBtn.classList.remove('disabled');
+            })
+            .finally(() => {
+                isResubmitInProgress = false;
+                resubmitBtn.innerHTML = originalText;
+            });
     }
-});
-document.addEventListener
+    function showDeclineToast(message, type = 'success') {
+        const existingToast = document.querySelector('.decline-toast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+        const toast = document.createElement('div');
+        toast.className = `decline-toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('edited') === 'true') {
+            const resubmitBtn = document.querySelector('.resubmit-btn');
+            if (resubmitBtn) {
+                resubmitBtn.classList.remove('disabled');
+                resubmitBtn.removeAttribute('disabled');
+                resubmitBtn.title = 'Resubmit for Review';
+                const hint = document.querySelector('.resubmit-hint');
+                if (hint) {
+                    hint.style.display = 'none';
+                }
+                showDeclineToast('Recipe updated! You can now resubmit it for review.', 'success');
+            }
+        }
+    });
+    document.addEventListener
 </script>

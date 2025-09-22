@@ -20,7 +20,8 @@
             <h4 class="mb-4" style="color: #1f2937; font-weight: 700;">
                 <i class="fas fa-sliders-h me-2" style="color: var(--nutri-green);"></i>
                 Filter by Macronutrients
-                <button class="btn btn-outline-secondary btn-sm ms-3" onclick="resetFilters()"><i class="fas fa-undo me-1"></i>Reset Filters</button>
+                <button class="btn btn-outline-secondary btn-sm ms-3" onclick="resetFilters()"><i
+                        class="fas fa-undo me-1"></i>Reset Filters</button>
             </h4>
             <div class="row">
                 <div class="col-md-6 col-lg-3">
@@ -31,8 +32,10 @@
                         </div>
                         <div class="range-slider">
                             <div class="range-fill" id="caloriesFill"></div>
-                            <input type="range" class="range-input" min="0" max="2000" value="0" id="caloriesMin" oninput="updateSlider('calories')">
-                            <input type="range" class="range-input" min="0" max="2000" value="2000" id="caloriesMax" oninput="updateSlider('calories')">
+                            <input type="range" class="range-input" min="0" max="2000" value="0" id="caloriesMin"
+                                oninput="updateSlider('calories')">
+                            <input type="range" class="range-input" min="0" max="2000" value="2000" id="caloriesMax"
+                                oninput="updateSlider('calories')">
                         </div>
                     </div>
                 </div>
@@ -44,8 +47,10 @@
                         </div>
                         <div class="range-slider">
                             <div class="range-fill" id="proteinFill"></div>
-                            <input type="range" class="range-input" min="0" max="150" value="0" id="proteinMin" oninput="updateSlider('protein')">
-                            <input type="range" class="range-input" min="0" max="150" value="150" id="proteinMax" oninput="updateSlider('protein')">
+                            <input type="range" class="range-input" min="0" max="150" value="0" id="proteinMin"
+                                oninput="updateSlider('protein')">
+                            <input type="range" class="range-input" min="0" max="150" value="150" id="proteinMax"
+                                oninput="updateSlider('protein')">
                         </div>
                     </div>
                 </div>
@@ -57,8 +62,10 @@
                         </div>
                         <div class="range-slider">
                             <div class="range-fill" id="carbsFill"></div>
-                            <input type="range" class="range-input" min="0" max="150" value="0" id="carbsMin" oninput="updateSlider('carbs')">
-                            <input type="range" class="range-input" min="0" max="150" value="150" id="carbsMax" oninput="updateSlider('carbs')">
+                            <input type="range" class="range-input" min="0" max="150" value="0" id="carbsMin"
+                                oninput="updateSlider('carbs')">
+                            <input type="range" class="range-input" min="0" max="150" value="150" id="carbsMax"
+                                oninput="updateSlider('carbs')">
                         </div>
                     </div>
                 </div>
@@ -70,24 +77,27 @@
                         </div>
                         <div class="range-slider">
                             <div class="range-fill" id="fatsFill"></div>
-                            <input type="range" class="range-input" min="0" max="150" value="0" id="fatsMin" oninput="updateSlider('fats')">
-                            <input type="range" class="range-input" min="0" max="150" value="150" id="fatsMax" oninput="updateSlider('fats')">
+                            <input type="range" class="range-input" min="0" max="150" value="0" id="fatsMin"
+                                oninput="updateSlider('fats')">
+                            <input type="range" class="range-input" min="0" max="150" value="150" id="fatsMax"
+                                oninput="updateSlider('fats')">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row" id="restaurantsGrid">
-            @foreach(var r in Model){
+            @foreach (var r in Model)
+            {
                 <div class="col-md-6 col-lg-4 mb-2">
-                        <div class="restaurant-card" onclick="openMenu(@r.Id)">
-                            <div class="restaurant-info">
-                                <img style="width: 200px;" src="@r.ImageUrl">
-                            </div>
-                            <div class="restaurant-name">@r.Name</div>
-                            <div class="restaurant-items">@r.Description</div>
+                    <div class="restaurant-card" onclick="openMenu(@r.Id)">
+                        <div class="restaurant-info">
+                            <img style="width: 200px;" src="@r.ImageUrl">
                         </div>
+                        <div class="restaurant-name">@r.Name</div>
+                        <div class="restaurant-items">@r.Description</div>
                     </div>
+                </div>
             }
         </div>
     </div>
@@ -108,6 +118,6 @@
             </div>
         </div>
     </div>
-   <script src="~/js/RestaurantIndex.js"></script>
+    <script src="~/js/RestaurantIndex.js"></script>
 </body>
 </html>

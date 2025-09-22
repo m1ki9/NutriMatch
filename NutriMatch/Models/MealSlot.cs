@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+
 namespace NutriMatch.Models
 {
     public class MealSlot

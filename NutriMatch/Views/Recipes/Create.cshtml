@@ -22,21 +22,15 @@
                     @Html.AntiForgeryToken()
                     <div class="form-group">
                         <label for="Title" class="label">Recipe Title</label>
-                        <input type="text" 
-                               name="Title" 
-                               id="Title" 
-                               class="input" 
-                               placeholder="Enter your recipe name..."
-                               required />
+                        <input type="text" name="Title" id="Title" class="input" placeholder="Enter your recipe name..."
+                            required />
                         <div class="validation-error" id="titleValidation"></div>
                     </div>
                     <div class="form-group">
                         <label class="label">Ingredients</label>
                         <div class="search-container">
                             <div class="flex-row">
-                                <input type="text" 
-                                    class="input flex-2" 
-                                    placeholder="Search ingredients..." 
+                                <input type="text" class="input flex-2" placeholder="Search ingredients..."
                                     id="ingredientSearch">
                                 <select class="input flex-1" id="ingredientUnit">
                                     <option value="">Unit</option>
@@ -47,18 +41,15 @@
                                     <option value="tsp">Teaspoon</option>
                                     <option value="cup">Cup</option>
                                 </select>
-                                <input type="number" 
-                                    class="input flex-1" 
-                                    placeholder="Amount" 
-                                    id="ingredientQuantity" 
-                                    step="0.01" 
-                                    min="0">
+                                <input type="number" class="input flex-1" placeholder="Amount" id="ingredientQuantity"
+                                    step="0.01" min="0">
                                 <button type="button" class="btn btn-primary" id="addIngredientButton">
                                     Add
                                 </button>
-                                <button type="button" class="btn btn-secondary add-new-ingredient-btn" id="addNewIngredientBtn" style="display: none;">
-                                        + Create New Ingredient
-                                 </button>
+                                <button type="button" class="btn btn-secondary add-new-ingredient-btn"
+                                    id="addNewIngredientBtn" style="display: none;">
+                                    + Create New Ingredient
+                                </button>
                             </div>
                             <div class="dropdown" id="ingredientDropdown"></div>
                         </div>
@@ -70,9 +61,8 @@
                     <div class="form-group">
                         <label class="label">Instructions</label>
                         <div class="flex-row">
-                            <textarea class="input textarea flex-1" 
-                                      placeholder="Add a cooking step..." 
-                                      id="instructionInput"></textarea>
+                            <textarea class="input textarea flex-1" placeholder="Add a cooking step..."
+                                id="instructionInput"></textarea>
                             <button type="button" class="btn btn-primary" id="addInstructionButton">
                                 Add Step
                             </button>
@@ -88,7 +78,8 @@
                             <div class="file-upload-icon">📷</div>
                             <p><strong>Click to upload</strong> or drag and drop</p>
                             <p>PNG, JPG, GIF up to 10MB</p>
-                            <input  type="file" id="RecipeImage" name="RecipeImage" accept="image/*" style="display: none;" required/>
+                            <input type="file" id="RecipeImage" name="RecipeImage" accept="image/*"
+                                style="display: none;" required />
                         </div>
                         <div id="imagePreview" style="margin-top: 1rem; text-align: center;"></div>
                     </div>

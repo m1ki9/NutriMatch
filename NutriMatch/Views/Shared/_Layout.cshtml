@@ -7,7 +7,7 @@
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/_Layout.css"  />
+    <link rel="stylesheet" href="~/css/_Layout.css" />
 </head>
 @{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
@@ -27,31 +27,41 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active-glow" : "")" href="/Home">Home</a>
+                            <a class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active-glow" : "")"
+                                href="/Home">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(currentController == "Recipes" && currentAction == "Index" ? "active-glow" : "")" href="/Recipes" >Recipes</a>
+                            <a class="nav-link @(currentController == "Recipes" && currentAction == "Index" ? "active-glow" : "")"
+                                href="/Recipes">Recipes</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(currentController == "Restaurants" && currentAction == "Index" ? "active-glow" : "") " href="/Restaurants">Restaurants</a>
+                            <a class="nav-link @(currentController == "Restaurants" && currentAction == "Index" ? "active-glow" : "") "
+                                href="/Restaurants">Restaurants</a>
                         </li>
-                        @if(User.Identity.IsAuthenticated){
+                        @if (User.Identity.IsAuthenticated)
+                        {
                             <li class="nav-item">
-                                <a class="nav-link @(currentController == "Recipes" && currentAction == "MyRecipes" ? "active-glow" : "")" href="/Recipes/MyRecipes">My Recipes</a>
+                                <a class="nav-link @(currentController == "Recipes" && currentAction == "MyRecipes" ? "active-glow" : "")"
+                                    href="/Recipes/MyRecipes">My Recipes</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @(currentController == "MealPlan" && currentAction == "Index" ? "active-glow" : "") " href="/MealPlan">Meal Plans</a>
+                                <a class="nav-link @(currentController == "MealPlan" && currentAction == "Index" ? "active-glow" : "") "
+                                    href="/MealPlan">Meal Plans</a>
                             </li>
-                             <a class="nav-link @(currentPage == "/Account/MyAccount" ? "active-glow" : "")"
+                            <a class="nav-link @(currentPage == "/Account/MyAccount" ? "active-glow" : "")"
                                 href="/Identity/Account/MyAccount">
                                 My Account
                             </a>
-                            @if (User.IsInRole("Admin")){
+                            @if (User.IsInRole("Admin"))
+                            {
                                 <li class="nav-item">
-                                <a class="nav-link @(currentController == "Admin" && currentAction == "Index" ? "active-glow" : "")" href="/Admin">Admin Panel</a>
+                                    <a class="nav-link @(currentController == "Admin" && currentAction == "Index" ? "active-glow" : "")"
+                                        href="/Admin">Admin Panel</a>
                                 </li>
                             }
-                        } else {
+                        }
+                        else
+                        {
                             <partial name="_LoginPartial" />
                         }
                     </ul>
