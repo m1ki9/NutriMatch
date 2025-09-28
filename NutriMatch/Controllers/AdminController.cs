@@ -93,7 +93,8 @@ public class AdminController : Controller
             string reason = request.TryGetProperty("reason", out var reasonProp) ? reasonProp.GetString() : "No reason provided.";
             string notes = request.TryGetProperty("notes", out var notesProp) ? notesProp.GetString() : "No notes provided.";
 
-            var recipe = await _context.Recipes.FindAsync(recipeId);
+            var recipe = await _context.Recipes.Include(r => r.RecipeIngredients)
+                .ThenInclude(ri => ri.Ingredient).FirstOrDefaultAsync(r => r.Id == recipeId);
             if (recipe == null)
             {
                 return Json(new { success = false, message = "Recipe not found." });

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NutriMatch.Data;
 using NutriMatch.Models;
+
 namespace NutriMatch.Services
 {
     public class MealPlanService : IMealPlanService
@@ -8,10 +9,12 @@ namespace NutriMatch.Services
         private readonly AppDbContext _context;
         private readonly Random _random;
         private readonly Dictionary<string, float> _mealTypeDistribution;
+
         public MealPlanService(AppDbContext context)
         {
             _context = context;
             _random = new Random();
+
             _mealTypeDistribution = new Dictionary<string, float>
             {
                 { "breakfast", 0.25f },
@@ -20,9 +23,11 @@ namespace NutriMatch.Services
                 { "snack", 0.05f }
             };
         }
+
         public async Task<MealPlanResult> GenerateWeeklyMealPlanAsync(string userId, MealPlanRequest request)
         {
             var result = new MealPlanResult { Success = false };
+
             try
             {
                 var weeklyPlan = new WeeklyMealPlan
@@ -30,9 +35,12 @@ namespace NutriMatch.Services
                     UserId = userId,
                     GeneratedAt = DateTime.UtcNow
                 };
+
                 var days = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
                 var mealTypes = new[] { "breakfast", "lunch", "dinner" };
+
                 var restaurantMealSlots = DistributeRestaurantMeals(request.RestaurantMealsPerWeek, days, mealTypes);
+
                 foreach (var day in days)
                 {
                     var dailyMacros = new DailyMacros
@@ -42,6 +50,7 @@ namespace NutriMatch.Services
                         Carbs = request.DailyCarbs,
                         Fat = request.DailyFat
                     };
+
                     foreach (var mealType in mealTypes)
                     {
                         var mealSlot = new MealSlot
@@ -49,8 +58,10 @@ namespace NutriMatch.Services
                             Day = day,
                             MealType = mealType
                         };
+
                         var targetMacros = CalculateMealMacros(dailyMacros, mealType);
                         var isRestaurantMeal = restaurantMealSlots.Contains($"{day}_{mealType}");
+
                         if (isRestaurantMeal)
                         {
                             var restaurantMeal = await SelectRestaurantMealAsync(mealType, targetMacros);
@@ -75,8 +86,10 @@ namespace NutriMatch.Services
                                 mealSlot.IsRestaurantMeal = false;
                             }
                         }
+
                         weeklyPlan.MealSlots.Add(mealSlot);
                     }
+
                     var remainingCalories = CalculateRemainingCalories(weeklyPlan.MealSlots.Where(ms => ms.Day == day).ToList(), dailyMacros.Calories);
                     if (remainingCalories > 100)
                     {
@@ -87,11 +100,13 @@ namespace NutriMatch.Services
                             Carbs = remainingCalories * 0.50f / 4,
                             Fat = remainingCalories * 0.35f / 9
                         };
+
                         var snackSlot = new MealSlot
                         {
                             Day = day,
                             MealType = "snack"
                         };
+
                         var snackRecipe = await SelectRecipeAsync("snack", snackMacros);
                         if (snackRecipe != null)
                         {
@@ -101,8 +116,10 @@ namespace NutriMatch.Services
                         }
                     }
                 }
+
                 _context.WeeklyMealPlans.Add(weeklyPlan);
                 await _context.SaveChangesAsync();
+
                 result.WeeklyMealPlan = weeklyPlan;
                 result.DailyMacroTotals = CalculateDailyMacroTotals(weeklyPlan);
                 result.Success = true;
@@ -111,8 +128,10 @@ namespace NutriMatch.Services
             {
                 result.ErrorMessage = $"Failed to generate meal plan: {ex.Message}";
             }
+
             return result;
         }
+
         public async Task<bool> DeleteMealPlanAsync(int id, string userId)
         {
             try
@@ -120,12 +139,16 @@ namespace NutriMatch.Services
                 var mealPlan = await _context.WeeklyMealPlans
                     .Include(wmp => wmp.MealSlots)
                     .FirstOrDefaultAsync(wmp => wmp.Id == id && wmp.UserId == userId);
+
                 if (mealPlan == null)
                 {
                     return false;
                 }
+
                 _context.MealSlots.RemoveRange(mealPlan.MealSlots);
+
                 _context.WeeklyMealPlans.Remove(mealPlan);
+
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -134,10 +157,12 @@ namespace NutriMatch.Services
                 return false;
             }
         }
+
         private HashSet<string> DistributeRestaurantMeals(int totalRestaurantMeals, string[] days, string[] mealTypes)
         {
             var restaurantSlots = new HashSet<string>();
             var availableSlots = new List<string>();
+
             foreach (var day in days)
             {
                 foreach (var mealType in mealTypes)
@@ -145,6 +170,7 @@ namespace NutriMatch.Services
                     availableSlots.Add($"{day}_{mealType}");
                 }
             }
+
             for (int i = 0; i < Math.Min(totalRestaurantMeals, availableSlots.Count); i++)
             {
                 if (availableSlots.Count > 0)
@@ -155,11 +181,14 @@ namespace NutriMatch.Services
                     availableSlots.RemoveAt(randomIndex);
                 }
             }
+
             return restaurantSlots;
         }
+
         private DailyMacros CalculateMealMacros(DailyMacros dailyMacros, string mealType)
         {
             var distribution = _mealTypeDistribution.GetValueOrDefault(mealType, 0.25f);
+
             return new DailyMacros
             {
                 Calories = dailyMacros.Calories * distribution,
@@ -168,23 +197,29 @@ namespace NutriMatch.Services
                 Fat = dailyMacros.Fat * distribution
             };
         }
+
         private async Task<Recipe> SelectRecipeAsync(string mealType, DailyMacros targetMacros)
         {
             var query = _context.Recipes
                 .Include(r => r.RecipeIngredients)
                 .Where(r => r.RecipeStatus == "Accepted");
+
             if (!string.IsNullOrEmpty(mealType))
             {
                 query = query.Where(r => r.Type.Contains(mealType));
             }
+
             var recipes = await query.ToListAsync();
+
             if (!recipes.Any())
             {
                 recipes = await _context.Recipes
                     .Where(r => r.RecipeStatus == "Accepted")
                     .ToListAsync();
             }
+
             if (!recipes.Any()) return null;
+
             var scoredRecipes = recipes.Select(recipe => new
             {
                 Recipe = recipe,
@@ -193,18 +228,25 @@ namespace NutriMatch.Services
             .OrderByDescending(x => x.Score)
             .Take(10)
             .ToList();
+
             var selectedRecipe = scoredRecipes[_random.Next(Math.Min(3, scoredRecipes.Count))].Recipe;
+
             return selectedRecipe;
         }
+
         private async Task<RestaurantMeal> SelectRestaurantMealAsync(string mealType, DailyMacros targetMacros)
         {
             var query = _context.RestaurantMeals.AsQueryable();
+
             if (!string.IsNullOrEmpty(mealType))
             {
                 query = query.Where(rm => rm.Type.Contains(mealType));
             }
+
             var restaurantMeals = await query.ToListAsync();
+
             if (!restaurantMeals.Any()) return null;
+
             var scoredMeals = restaurantMeals.Select(meal => new
             {
                 Meal = meal,
@@ -213,37 +255,47 @@ namespace NutriMatch.Services
             .OrderByDescending(x => x.Score)
             .Take(5)
             .ToList();
+
             return scoredMeals[_random.Next(scoredMeals.Count)].Meal;
         }
+
         private double CalculateMacroMatchScore(Recipe recipe, DailyMacros targetMacros)
         {
             var calorieMatch = 1.0 - Math.Abs(recipe.Calories - targetMacros.Calories) / targetMacros.Calories;
             var proteinMatch = 1.0 - Math.Abs(recipe.Protein - targetMacros.Protein) / Math.Max(targetMacros.Protein, 1);
             var carbMatch = 1.0 - Math.Abs(recipe.Carbs - targetMacros.Carbs) / Math.Max(targetMacros.Carbs, 1);
             var fatMatch = 1.0 - Math.Abs(recipe.Fat - targetMacros.Fat) / Math.Max(targetMacros.Fat, 1);
+
             return (calorieMatch * 0.4 + proteinMatch * 0.2 + carbMatch * 0.2 + fatMatch * 0.2) * 100;
         }
+
         private double CalculateMacroMatchScore(RestaurantMeal meal, DailyMacros targetMacros)
         {
             var calorieMatch = 1.0 - Math.Abs(meal.Calories - targetMacros.Calories) / targetMacros.Calories;
             var proteinMatch = 1.0 - Math.Abs(meal.Protein - targetMacros.Protein) / Math.Max(targetMacros.Protein, 1);
             var carbMatch = 1.0 - Math.Abs(meal.Carbs - targetMacros.Carbs) / Math.Max(targetMacros.Carbs, 1);
             var fatMatch = 1.0 - Math.Abs(meal.Fat - targetMacros.Fat) / Math.Max(targetMacros.Fat, 1);
+
             return (calorieMatch * 0.4 + proteinMatch * 0.2 + carbMatch * 0.2 + fatMatch * 0.2) * 100;
         }
+
         private float CalculateRemainingCalories(List<MealSlot> dayMeals, float targetCalories)
         {
             var totalCalories = dayMeals.Sum(ms =>
                 ms.IsRestaurantMeal ? (ms.RestaurantMeal?.Calories ?? 0) : (ms.Recipe?.Calories ?? 0));
+
             return Math.Max(0, targetCalories - totalCalories);
         }
+
         private Dictionary<string, DailyMacros> CalculateDailyMacroTotals(WeeklyMealPlan weeklyPlan)
         {
             var dailyTotals = new Dictionary<string, DailyMacros>();
             var days = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
             foreach (var day in days)
             {
                 var dayMeals = weeklyPlan.MealSlots.Where(ms => ms.Day == day).ToList();
+
                 dailyTotals[day] = new DailyMacros
                 {
                     Calories = dayMeals.Sum(ms => ms.IsRestaurantMeal ? (ms.RestaurantMeal?.Calories ?? 0) : (ms.Recipe?.Calories ?? 0)),
@@ -252,20 +304,13 @@ namespace NutriMatch.Services
                     Fat = dayMeals.Sum(ms => ms.IsRestaurantMeal ? (ms.RestaurantMeal?.Fat ?? 0) : (ms.Recipe?.Fat ?? 0))
                 };
             }
+
             return dailyTotals;
         }
-        public async Task<List<RestaurantMeal>> GetSuitableRestaurantMealsAsync(string mealType, DailyMacros targetMacros)
-        {
-            var query = _context.RestaurantMeals.AsQueryable();
-            if (!string.IsNullOrEmpty(mealType))
-            {
-                query = query.Where(rm => rm.Type.Contains(mealType));
-            }
-            return await query.ToListAsync();
-        }
+
         public async Task<WeeklyMealPlan> GetMealPlanByIdAsync(int id, string userId)
         {
-#pragma warning disable CS8603
+#pragma warning disable CS8603 
             return await _context.WeeklyMealPlans
                 .Include(wmp => wmp.MealSlots)
                     .ThenInclude(ms => ms.Recipe)
@@ -275,6 +320,7 @@ namespace NutriMatch.Services
                         .ThenInclude(rm => rm.Restaurant)
                 .FirstOrDefaultAsync(wmp => wmp.Id == id && wmp.UserId == userId);
         }
+
         public async Task<List<WeeklyMealPlan>> GetUserMealPlansAsync(string userId)
         {
             return await _context.WeeklyMealPlans
